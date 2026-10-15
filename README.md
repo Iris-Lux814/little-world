@@ -22,7 +22,31 @@ server/   联机服务（Node，无依赖）：邀请、同意设备、钓鱼接
 test/     node test/xxx.test.js
 ```
 
-## 跑起来
+## 先说清楚
+
+- **单人版**（`server/solo.js`）：一个人玩，AI 伙伴由简单的自动玩法驱动（走走、甩竿、卖鱼、接赌、接牌），不需要接任何大模型。接口在 `/api/world/...`。
+- **联机版**（`server/server.js`）：邀请朋友来你的世界。**联机没在别的环境实测过，可能有 bug**，当作参考实现。
+- 捉迷藏、换装这些家里的玩法没有放进来。
+
+## 单人版跑起来
+
+```bash
+node test/solo.test.js            # 整套流程（临时目录起服务）
+DATA_DIR=./data PORT=29901 node server/solo.js
+# 前端把世界接口地址指到 http://127.0.0.1:29901/api/world
+```
+
+环境变量：`PORT`（默认 29901）、`HOST`（默认 127.0.0.1，只听本机）、`DATA_DIR`（存档）、`WORLD_PREFIX`（接口前缀，默认 `/api/world`）、`WORLD_CONTENT` / `WORLD_FARM_CONTENT` / `WORLD_DUEL_CONTENT`（内容包）。
+
+接口跟联机版 / 原版一致：`GET /api/world`（带 `px/py/pd` 报站位）、`/cast` `/hook` `/land`、`/travel` `/visit` `/sell` `/buy` `/equip` `/use` `/act`、`/farm/*`、`/cabin/*`、`/legend/*`、`/bet/*`、`/ddz/*`、`/cards/*`、`/chat`。
+
+小人图（前端那边 48×64 一格、5 行 × 5 格）：
+
+- `POST /api/world/sprite`（正文直接放 PNG，`Content-Type: image/png`，240×320、≤512KB；`?who=<id>` 给伙伴换）
+- `GET /api/world/sprite/<id>`、`DELETE /api/world/sprite`
+- `GET /api/world` 里每个人带 `sprite` 字段：有图是 `/api/world/sprite/<id>?v=时间`，没有是 `null`（前端用默认小人）。
+
+## 联机版跑起来
 
 ```bash
 node test/ddz.test.js            # 斗地主规则 + 托管自己打 500 局

@@ -125,7 +125,7 @@ function doPlay(g, who, ids) {
   g.turn = (g.turn + 1) % 3; g.turnAt = Date.now(); return { ok: true, play: g.last };
 }
 function finish(g, who) {
-  g.phase = "done"; g.winner = who; const lordWin = who === g.landlord;
+  g.phase = "done"; g.winner = who; g.endedAt = Date.now(); const lordWin = who === g.landlord;
   const farmers = g.seats.filter((s) => s !== g.landlord);
   const spring = lordWin ? farmers.every((f) => g.played[f] === 0) : g.played[g.landlord] === 1;
   const mult = g.bid.cur * 2 ** g.bombs * (spring ? 2 : 1);

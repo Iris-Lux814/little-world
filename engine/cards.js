@@ -112,7 +112,7 @@ function resolve(s, g, { now = Date.now(), names = {} } = {}) {
   // 放生：最小的那张（不是赢家、唯一最小）偷看下一张天气
   let freed = null;
   if (g.round < ROUNDS) { const cand = rest.filter((w) => w !== winner); if (cand.length) { const lo = Math.min(...cand.map((w) => pw[w])); const los = cand.filter((w) => pw[w] === lo); if (los.length === 1) { freed = los[0]; g.peek[freed] = { round: g.round + 1, wx: g.wxDeck[g.round] }; parts.push(`${N(freed)}的${P[freed].name}最小，放生——偷看了下一张天气`); } } }
-  const r = { round: g.round, wx, played: Object.fromEntries(g.seats.map((w) => [w, { name: P[w].name, stars: P[w].stars, kg: P[w].kg, power: pw[w], auto: P[w].auto, thrown: thrown.includes(w) }])), winner, freed, text: `第 ${g.round} 轮（${wx}）：${g.seats.map((w) => `${N(w)} ${P[w].name}${thrown.includes(w) ? "（扔）" : ` ${pw[w]}`}`).join("，")}。${parts.join("；")}。` };
+  const r = { round: g.round, wx, played: Object.fromEntries(g.seats.map((w) => [w, { name: P[w].name, stars: P[w].stars, kg: P[w].kg, power: pw[w], auto: P[w].auto, thrown: thrown.includes(w), species: P[w].species, spot: P[w].spot, legend: !!P[w].legend, junk: !!P[w].junk, empty: !!P[w].empty }])), winner, freed, text: `第 ${g.round} 轮（${wx}）：${g.seats.map((w) => `${N(w)} ${P[w].name}${thrown.includes(w) ? "（扔）" : ` ${pw[w]}`}`).join("，")}。${parts.join("；")}。` };
   g.log.push(r); g.played = {};
   if (g.round >= ROUNDS || g.seats.some((w) => !g.hands[w].length)) { g.status = "done"; settle(s, g, names); }
   else { g.round++; g.roundAt = now; g.deadline = now + TURN_MS; }
@@ -143,7 +143,7 @@ function favor(s, winner, from) {
 }
 /** addCatch 之后调：有欠着的「替我钓一竿」就把这条转过去 */
 function takeFavor(s, who, item) {
-  const fs = (s.cards && s.cards.favors) || []; const i = fs.findIndex((f) => f.from === who); if (i < 0) return null;
+  const fs = (s.cards && s.cards.favors) || []; const i = fs.findIndex((f) => f.from === who && !(s.players[f.to] && s.players[f.to].away)); if (i < 0) return null;
   const [f] = fs.splice(i, 1); const p = s.players[who]; const k = p.bucket.findIndex((x) => x.id === item.id); if (k < 0) return null;
   const [fish] = p.bucket.splice(k, 1); s.players[f.to].bucket.push({ ...fish, giftFrom: who, favor: true }); return f;
 }

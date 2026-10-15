@@ -163,6 +163,8 @@ function rollCatch(p, b, wx = "", s = null) {
   const kg = Math.round(rnd(sp.kg[0], sp.kg[1]) * 100) / 100;
   return { species: sp.id, name: sp.name, rarity: sp.r, stars: sp.r + 1, kg, junk: !!sp.junk };
 }
+
+const CATCH_HOOKS = [];
 function note(s, ev) { s.events.push({ at: Date.now(), ...ev }); }
 /** 钓上来一条：进鱼桶、记图鉴、记成就用的数 */
 function addCatch(s, who, c) {
@@ -178,6 +180,7 @@ function addCatch(s, who, c) {
   if (SPECIES.find((x) => x.id === c.species)?.pair) { const other = who === HOST ? PARTNER : HOST; const op = s.players[other]; if (op) { op.bucket.push({ ...item, id: item.id + "b", by: who, pairOf: who }); note(s, { type: "pair", who, to: other, name: c.name }); } }
   note(s, { type: "catch", who, item, first, record });
   betOnCatch(s, who, item);
+  for (const f of CATCH_HOOKS) { try { f(s, who, item); } catch { /* 钩子出错不影响钓鱼 */ } }
   return { item, first, record, mineFirst };
 }
 const desc = (c) => `${c.name}（${RARITY[c.rarity]}·${c.stars}★·${c.kg}kg）`;
@@ -525,5 +528,5 @@ module.exports = {
   TANK_CAP, AI_TANK_MAX, CABIN_OPEN, tankPut, tankTake, cabinView,
   DECOR_SLOTS, NOTE_LEN, cabinPlace, cabinNote,
   LORD_SOLO, LEGEND, CHEER, CHEER_LINES, legendTick, legendJoin, legendStart, legendCheer, legendEnd, legendView,
-  BET_KINDS, betCreate, betAnswer, betOnCatch, betTick, betPay, betsView,
+  CATCH_HOOKS, BET_KINDS, betCreate, betAnswer, betOnCatch, betTick, betPay, betsView,
 };

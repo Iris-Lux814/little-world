@@ -9,7 +9,7 @@ const WORLD_TZ = process.env.WORLD_TZ || "Etc/GMT-8"; // 游戏按 UTC+8 走（�
 const crypto = require("crypto");
 const C = require(process.env.WORLD_FARM_CONTENT || "../content/example-farm.js");
 
-const FARM = { waterMax: 6, rainStepMs: 30 * 60000, homeTiles: 6, guestTiles: 4, crossOdds: 0.3, pityDays: 2, helpAfterMs: 2 * 3600000, stages: 4 };
+const FARM = { waterMax: 6, rainStepMs: 30 * 60000, homeTiles: 6, guestTiles: 4, crossOdds: 0.3, pityDays: 2, helpAfterMs: 2 * 3600000, stages: 4, groundTiles: 18 };
 
 const HOME = C.HOME; const HOST = C.HOST;
 const POT_KIND = C.POT_KIND;
@@ -29,8 +29,19 @@ function farmOf(s) {
   f.hybrids = f.hybrids || {};
   f.day = f.day || shDay();
   f.today = f.today || { rained: false, helped: {}, flooded: null };
+
+  f.ground = f.ground || tiles(FARM.groundTiles);
+  while (f.ground.length < FARM.groundTiles) f.ground.push({ crop: null });
   return f;
 }
+/** "ground:3" / 3 → 3（去空格、不分大小写）；不是地块编号 → -1 */
+function groundIdx(plot) {
+  const m = /^(?:ground:)?(\d+)$/.exec(String(plot ?? "").trim().toLowerCase());
+  const i = m ? Number(m[1]) : -1;
+  return i >= 0 && i < FARM.groundTiles ? i : -1;
+}
+// 传了 plot 就一定按地块处理（非法直接报错），只有没传才走自己的盆
+const hasPlot = (plot) => plot != null && String(plot).trim() !== "";
 const board = (f, who, text) => { f.board.push({ at: Date.now(), who, text }); f.board = f.board.slice(-50); };
 const pl = (s, who) => { const p = s.players[who]; p.seeds = p.seeds || {}; p.basket = p.basket || []; return p; };
 const seedName = (f, id) => (C.SEEDS[id] ? C.SEEDS[id].name : (f.hybrids[id] && f.hybrids[id].name) || id);
@@ -45,8 +56,18 @@ function buySeed(s, who, q, n = 1) {
   return { ok: true, text: `买了 ${n} 包${it.name}种子（${C.PACK * n} 颗）。`, seeds: p.seeds };
 }
 /** 种：只能种自己的盆 */
-function plant(s, who, tile, seed) {
-  const f = farmOf(s); const pot = f.pots[who]; if (!pot) return { error: "你在伞上还没有花盆" };
+function plant(s, who, tile, seed, plot) {
+  const f = farmOf(s);
+  if (hasPlot(plot)) {
+    const i = groundIdx(plot); if (i < 0) return { error: `没有「${plot}」这块地` };
+    if (f.ground[i].crop) return { error: "这块地已经种了" };
+    const p = pl(s, who); const id = Object.keys(p.seeds).find((k) => (k === seed || seedName(f, k) === seed) && p.seeds[k] > 0) || (!seed ? Object.keys(p.seeds).find((k) => p.seeds[k] > 0) : null);
+    if (!id) return { error: seed ? `你没有「${seed}」的种子，先去秤砣那儿买` : "你没有种子，先去秤砣那儿买" };
+    p.seeds[id]--; if (!p.seeds[id]) delete p.seeds[id];
+    f.ground[i].crop = { seed: id, plantedAt: Date.now(), stage: 0, wet: 0, dryDays: 0, pollen: null, by: who };
+    return { ok: true, plot: `ground:${i}`, text: `在地${i + 1}种下了${seedName(f, id)}。` };
+  }
+  const pot = f.pots[who]; if (!pot) return { error: "你在伞上还没有花盆" };
   const i = Number.isInteger(Number(tile)) ? Number(tile) : pot.tiles.findIndex((t) => !t.crop);
   if (i < 0 || i >= pot.tiles.length) return { error: "盆里没有空格了" };
   if (pot.tiles[i].crop) return { error: "这格已经种了" };
@@ -75,8 +96,18 @@ function spout(s, who, to) {
   return { ok: true, water: f.water.level, text: `咔——竹管转向${nameOf(s, key)}的盆，水顺着槽流过去，盆里都湿透了。伞里还剩 ${f.water.level} 格水。` };
 }
 /** 收：只收自己盆里熟了的；串过粉的顺带一颗杂交种子 */
-function harvest(s, who, tile) {
-  const f = farmOf(s); const pot = f.pots[who]; if (!pot) return { error: "你在伞上还没有花盆" };
+function harvest(s, who, tile, plot) {
+  const f = farmOf(s);
+  if (hasPlot(plot)) {
+    const i = groundIdx(plot); if (i < 0) return { error: `没有「${plot}」这块地` };
+    const c = f.ground[i].crop; if (!c || c.stage < FARM.stages) return { error: "这块地还没有熟的" };
+    const p = pl(s, who);
+    const item = { id: `v${Date.now().toString(36)}${crypto.randomBytes(2).toString("hex")}`, at: Date.now(), by: who, grower: c.by || null, seed: c.seed, name: seedName(f, c.seed), hybrid: !!f.hybrids[c.seed] };
+    p.basket.push(item); p.harvested = (p.harvested || 0) + 1; f.ground[i].crop = null;
+    const from = c.by && c.by !== who ? `（${nameOf(s, c.by)}种的）` : "";
+    return { ok: true, plot: `ground:${i}`, text: `从地${i + 1}收了${item.name}${from}。`, basket: p.basket.length };
+  }
+  const pot = f.pots[who]; if (!pot) return { error: "你在伞上还没有花盆" };
   const idxs = tile != null && tile !== "" ? [Number(tile)] : pot.tiles.map((t, i) => (t.crop && t.crop.stage >= FARM.stages ? i : -1)).filter((i) => i >= 0);
   if (!idxs.length) return { error: "还没有熟的" };
   const p = pl(s, who); const got = [];
@@ -88,6 +119,14 @@ function harvest(s, who, tile) {
     t.crop = null;
   }
   return got.length ? { ok: true, text: `收了：${got.join("、")}。`, basket: p.basket.length } : { error: "还没有熟的" };
+}
+/** 浇地：不用伞里的水（井 / 水壶，不限次），那一格今天湿透 */
+function water(s, who, plot) {
+  const f = farmOf(s); const i = groundIdx(plot); if (i < 0) return { error: `没有「${plot}」这块地` };
+  const c = f.ground[i].crop; if (!c) return { error: `地${i + 1}还空着，没什么可浇的` };
+  if (c.wet >= 1) return { ok: true, plot: `ground:${i}`, text: `地${i + 1}已经是湿的了。` };
+  c.wet = 1;
+  return { ok: true, plot: `ground:${i}`, text: `给地${i + 1}的${seedName(f, c.seed)}浇了水。` };
 }
 function sign(s, who, text) { const f = farmOf(s); const pot = f.pots[who]; if (!pot) return { error: "你在伞上还没有花盆" }; pot.sign = String(text || "").trim().slice(0, 10) || null; return { ok: true, text: pot.sign ? `插了个小牌子：「${pot.sign}」` : "把小牌子拔了" }; }
 
@@ -108,6 +147,12 @@ function farmDay(s) {
     const flooded = f.today.flooded === w;
     if (!flooded && (c.wet >= 1 || f.today.rained)) { c.stage = Math.min(FARM.stages, c.stage + 1); c.dryDays = 0; }
     else if (!flooded) { c.dryDays = (c.dryDays || 0) + 1; if (c.dryDays >= 3) { board(f, "system", `${nameOf(s, w)}盆里的${seedName(f, c.seed)}干死了。`); out.push({ type: "wither", who: w }); t.crop = null; continue; } }
+    c.wet = 0;
+  }
+  for (const t of f.ground) { // 地里：雨或手动浇过就长，干 3 天枯；不会被竹管淹
+    const c = t.crop; if (!c) continue;
+    if (c.wet >= 1 || f.today.rained) { c.stage = Math.min(FARM.stages, c.stage + 1); c.dryDays = 0; }
+    else { c.dryDays = (c.dryDays || 0) + 1; if (c.dryDays >= 3) { board(f, "system", `地里${nameOf(s, c.by || HOST)}种的${seedName(f, c.seed)}干死了。`); out.push({ type: "wither", who: c.by || null, plot: true }); t.crop = null; continue; } }
     c.wet = 0;
   }
   f.today = { rained: false, helped: {}, flooded: null };
@@ -136,6 +181,7 @@ function farmTick(s, o = {}) {
       if (!must && roll[w]) continue; roll[w] = true;
       if (!must && Math.random() >= C.HELPERS[w].odds) continue;
       spout(s, w, HOST); f.today.helped[w] = now;
+      for (const t of f.ground) if (t.crop) t.crop.wet = 1;
       const h = C.HELPERS[w]; board(f, w, h.line[Math.floor(Math.random() * h.line.length)]);
       if (h.sign) herPot.sign = h.sign[Math.floor(Math.random() * h.sign.length)];
       ev.push({ type: "help", who: w, must });
@@ -159,8 +205,21 @@ function farmView(s) {
     slots: f.slots.map((w) => ({ who: w, name: nameOf(s, w), ...f.pots[w], tiles: f.pots[w].tiles.map((t) => (t.crop ? { crop: { ...t.crop, name: seedName(f, t.crop.seed), ripe: t.crop.stage >= FARM.stages } } : { crop: null })) })),
     shop: Object.entries(C.SEEDS).map(([id, x]) => ({ id, name: x.name, price: x.price, pack: C.PACK, sell: x.sell })),
     stages: FARM.stages,
+    ground: f.ground.map((t, i) => ({ id: `ground:${i}`, crop: t.crop ? { ...t.crop, name: seedName(f, t.crop.seed), ripe: t.crop.stage >= FARM.stages, byName: t.crop.by ? nameOf(s, t.crop.by) : null } : null })),
   };
+}
+
+function cropPrice(f, seed) { if (C.SEEDS[seed]) return C.SEEDS[seed].sell; const h = f.hybrids[seed]; if (!h) return 0; const [a, b] = h.parents || []; return Math.round((((C.SEEDS[a] || {}).sell || 0) + ((C.SEEDS[b] || {}).sell || 0)) / 2 * 1.5); }
+function sellCrop(s, who, id) {
+  const f = farmOf(s); const p = pl(s, who);
+  const pick = id ? p.basket.filter((x) => x.id === id) : p.basket.slice();
+  if (!pick.length) return { error: id ? "菜篮里没有这个" : "菜篮是空的" };
+  let got = 0; const names = {};
+  for (const x of pick) { got += cropPrice(f, x.seed); names[x.name] = (names[x.name] || 0) + 1; }
+  const ids = new Set(pick.map((x) => x.id)); p.basket = p.basket.filter((x) => !ids.has(x.id));
+  p.coins = (p.coins || 0) + got;
+  return { ok: true, text: `秤砣收了${Object.entries(names).map(([k, n]) => (n > 1 ? `${k}×${n}` : k)).join("、")}，给了 ${got} 亮鳞。`, got, wallet: p.coins };
 }
 const farmBag = (s, who) => { const p = pl(s, who); return { seeds: p.seeds, basket: p.basket.slice(-30) }; };
 
-module.exports = { FARM, farmOf, farmView, farmBag, farmTick, farmDay, buySeed, plant, shake, spout, harvest, sign, farmJoin, farmLeave };
+module.exports = { FARM, farmOf, farmView, farmBag, farmTick, farmDay, buySeed, plant, shake, spout, harvest, water, groundIdx, sellCrop, cropPrice, sign, farmJoin, farmLeave };

@@ -6,7 +6,8 @@
   "private": true,
   "engines": { "node": ">=18" },
   "scripts": {
-    "start": "node server/server.js",
-    "test": "node test/engine.test.js && node test/ddz.test.js && node test/online-flow.test.js && node test/ddz-flow.test.js"
+    "start": "node server/solo.js",
+    "start:online": "node server/server.js",
+    "test": "node test/engine.test.js && node test/ddz.test.js && node test/solo.test.js && node test/online-flow.test.js && node test/ddz-flow.test.js"
   }
 }
