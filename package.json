@@ -1,12 +1,14 @@
 {
   "name": "little-world",
-  "version": "0.1.0",
-  "description": "A small always-running fishing world backend: fishing, farm, card games, online visits; AI companions play by the same rules.",
+  "version": "0.3.0",
+  "description": "A small always-running pixel fishing world (backend + web frontend): fishing, farm, card games, online visits; AI companions play by the same rules.",
   "license": "AGPL-3.0-only",
   "private": true,
   "engines": { "node": ">=18" },
   "scripts": {
     "start": "node server/solo.js",
+    "dev": "node dev.js",
+    "web:install": "npm --prefix web install",
     "start:online": "node server/server.js",
     "test": "node test/engine.test.js && node test/ddz.test.js && node test/solo.test.js && node test/online-flow.test.js && node test/ddz-flow.test.js"
   }

@@ -1,0 +1,260 @@
+/* 秤砣的小摊（StallShop.tsx）。奶白纸 + 粉缝线 + 主粉；遮阳棚跟游戏里的摊子一样粉白条纹。
+ 全部 transform / opacity 动画，不闪；横屏手机 390 高也放得下 */
+.mask { position: absolute; inset: 0; z-index: 14; display: flex; align-items: center; justify-content: center; background: rgba(74, 64, 69, .3); animation: fade .25s ease-out backwards;
+  --paper: #FFFDF8; --stitch: #F2B6C8; --pink: #EB7FA3; --ink: #7A5C68; --soft: #A8959D; --wood: #C99A6B; --woodD: #9C6E48; --blue: #7F97CF; }
+.maskOut { animation: fadeOut .38s ease-in forwards; }
+.maskOut .stall { animation: stallOut .38s ease-in forwards; }
+@keyframes fade { from { opacity: 0; } }
+@keyframes fadeOut { to { opacity: 0; } }
+@keyframes stallOut { to { transform: translateY(24px) scale(.94); opacity: 0; } }
+
+.stall { position: relative; width: min(700px, calc(100% - 20px)); height: min(372px, calc(100% - 14px)); display: flex; flex-direction: column; border-radius: 14px; background: var(--paper);
+  box-shadow: 0 3px 0 rgba(242, 182, 200, .5), 0 12px 28px rgba(60, 50, 30, .25); animation: rise .45s cubic-bezier(.3, 1.4, .5, 1) backwards; }
+.stall::before { content: ""; position: absolute; inset: 5px; border: 1.4px dashed var(--stitch); border-radius: 10px; pointer-events: none; z-index: 0; }
+@keyframes rise { from { transform: translateY(26px) scale(.95); opacity: 0; } }
+
+/* 遮阳棚：粉白竖条，下沿一排小圆边；从上往下放下来，落定弹一下 */
+.awning { position: relative; z-index: 2; flex: none; height: 30px; margin: 0 -4px; border-radius: 12px 12px 0 0; transform-origin: 50% 0;
+  background: repeating-linear-gradient(90deg, #F5A9C0 0 28px, #FFF6EE 28px 56px); box-shadow: inset 0 -3px 0 rgba(0, 0, 0, .05); animation: unroll .55s .05s cubic-bezier(.3, 1.5, .5, 1) backwards; }
+.scallop { position: absolute; left: 0; right: 0; top: 100%; height: 10px; background: radial-gradient(circle at 14px 0, #F5A9C0 9px, transparent 9.5px) 0 0 / 56px 10px repeat-x, radial-gradient(circle at 42px 0, #FFF6EE 9px, transparent 9.5px) 0 0 / 56px 10px repeat-x;
+  filter: drop-shadow(0 2px 0 rgba(122, 92, 104, .08)); }
+@keyframes unroll { from { transform: scaleY(0); } }
+.sign { position: absolute; z-index: 3; left: 50%; top: 18px; display: flex; flex-direction: column; align-items: center; padding: 3px 14px 4px; border-radius: 6px; background: #FFF9F0; border: 1.5px solid var(--woodD);
+  box-shadow: 0 2px 0 var(--woodD); transform: translateX(-50%); transform-origin: 50% -10px; animation: signIn .5s .3s cubic-bezier(.3, 1.6, .5, 1) backwards, signSwing 2.4s .8s ease-in-out 1; }
+.sign::before, .sign::after { content: ""; position: absolute; top: -12px; width: 1.5px; height: 12px; background: var(--woodD); }
+.sign::before { left: 16px; } .sign::after { right: 16px; }
+.sign b { font-size: 14px; letter-spacing: .12em; color: var(--ink); }
+.sign span { font-size: 10.5px; color: var(--soft); white-space: nowrap; }
+@keyframes signIn { from { transform: translateX(-50%) translateY(-24px); opacity: 0; } }
+@keyframes signSwing { 0%, 100% { transform: translateX(-50%) rotate(0); } 25% { transform: translateX(-50%) rotate(3deg); } 55% { transform: translateX(-50%) rotate(-2deg); } 80% { transform: translateX(-50%) rotate(.8deg); } }
+
+/* 亮鳞罐：玻璃罐里的鳞片高度随钱多少，数字滚 */
+.jar { position: absolute; z-index: 3; right: 48px; top: 20px; display: flex; align-items: center; gap: 4px; padding: 3px 10px 3px 6px; border-radius: 12px; background: #fff; border: 1.2px dashed var(--stitch); color: var(--blue); font-weight: 700; font-size: 15px;
+  animation: signIn .5s .38s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+.jar small { font-size: 10.5px; font-weight: 500; color: var(--soft); }
+.jar u { text-decoration: none; font-size: 10.5px; color: #C9667F; margin-left: 2px; }
+.jarGlass { position: relative; width: 14px; height: 18px; border-radius: 3px 3px 5px 5px; border: 1.5px solid #B9C8E8; border-top-width: 3px; background: rgba(238, 243, 252, .6); overflow: hidden; }
+.jarGlass em { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #fff 0 20%, #BFE3F2 45%, #9C8FE0 100%); transition: height .7s cubic-bezier(.3, 1.3, .5, 1); }
+.x { position: absolute; z-index: 3; right: 12px; top: 18px; width: 28px; height: 28px; border-radius: 50%; border: 1.2px dashed var(--stitch); background: #fff; color: var(--ink); font-size: 16px; line-height: 1; cursor: pointer; }
+
+.body { position: relative; z-index: 1; flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 42%) minmax(0, 1fr); gap: 10px; padding: 26px 14px 12px; }
+
+/* ── 左：柜台 ── */
+.counter { position: relative; display: flex; flex-direction: column; min-height: 0; }
+.pelWrap { position: absolute; left: 4px; top: -6px; width: 96px; height: 111px; z-index: 0; animation: pelIn .5s .25s cubic-bezier(.3, 1.5, .5, 1) backwards; }
+.pelWrap { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+/* 点抖毛（身子左右一抖、羽毛飘下来）/ 瞪（往前一探）/ 弹一片亮鳞出去又弹回来 / 装睡（慢慢矮下去，冒 z） */
+.poke_feather .pel { animation: ruffle .5s ease-in-out 1 !important; }
+@keyframes ruffle { 20% { transform: rotate(-4deg) scaleX(1.04); } 45% { transform: rotate(4deg) scaleX(1.06); } 70% { transform: rotate(-2deg); } }
+.poke_glare .pel { animation: lean .6s cubic-bezier(.3, 1.6, .5, 1) 1 !important; transform-origin: 50% 100%; }
+@keyframes lean { 40% { transform: translateX(6px) scale(1.06); } }
+.poke_nap .pel { animation: sink 1.8s ease-in-out 1 forwards !important; transform-origin: 50% 100%; }
+@keyframes sink { 30%, 100% { transform: scaleY(.94) translateY(2px); } }
+.feathers { position: absolute; left: 30px; top: 30px; width: 40px; height: 40px; pointer-events: none; z-index: 3; }
+.feathers i { position: absolute; left: calc(var(--i) * 8px); top: 10px; width: 7px; height: 3px; border-radius: 50%; background: #FFFDF8; box-shadow: 0 0 0 .6px #D9CFC0;
+  animation: featherFall 1.4s calc(var(--i) * .07s) ease-out forwards; opacity: 0; }
+@keyframes featherFall { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 50% { transform: translate(calc((var(--i) - 2) * 7px), 26px) rotate(60deg); opacity: 1; } 100% { transform: translate(calc((var(--i) - 2) * 12px), 60px) rotate(-30deg); opacity: 0; } }
+.tossCoin { position: absolute; left: 56px; top: 30px; width: 9px; height: 7px; border-radius: 50% 50% 45% 45%; background: linear-gradient(135deg, #fff 0 25%, #BFE3F2 45%, #9C8FE0 100%); box-shadow: 0 0 5px #CFE8FF; z-index: 3; pointer-events: none;
+  animation: tossCoin 1.3s ease-in-out forwards; }
+@keyframes tossCoin { 0% { transform: translate(0, 0) rotate(0); } 40% { transform: translate(60px, -30px) rotate(400deg); } 55% { transform: translate(70px, -22px) rotate(460deg); } 100% { transform: translate(0, 4px) rotate(900deg); opacity: 0; } }
+.zz { position: absolute; left: 62px; top: 6px; z-index: 3; font-style: normal; font-size: 13px; font-weight: 700; color: #A8959D; pointer-events: none; animation: zz 1.8s ease-out forwards; }
+.zz i { font-style: normal; font-size: 10px; margin-left: 2px; }
+@keyframes zz { from { transform: translate(0, 6px); opacity: 0; } 30% { opacity: 1; } to { transform: translate(10px, -14px); opacity: 0; } }
+.pel { width: 96px; height: 111px; background-repeat: no-repeat; background-size: 288px auto; image-rendering: pixelated; animation: pelPlay .9s steps(1) 1; }
+/* 动作帧：0 → 1 → 2 → 停在 0（steps(1) 每格一跳，不插值） */
+@keyframes pelPlay { 0% { background-position-x: 0; } 33% { background-position-x: -96px; } 66% { background-position-x: -192px; } 99.9% { background-position-x: -192px; } 100% { background-position-x: 0; } }
+@keyframes pelIn { from { transform: translateY(40px); } }
+.pel[data-act="weigh"], .pel[data-act="deal"], .pel[data-act="soft"] { animation: pelPlay 1.2s steps(1) 2; }
+.say { position: absolute; z-index: 2; left: 84px; top: 22px; max-width: calc(100% - 88px); padding: 5px 9px; border-radius: 10px 10px 10px 3px; transform-origin: 0 100%; background: #fff; border: 1.2px solid #F4E4EA; font-size: 11.5px; line-height: 1.45; color: var(--ink);
+  box-shadow: 0 2px 6px rgba(122, 92, 104, .08); animation: pop .35s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+.say::before { content: ""; position: absolute; left: -7px; bottom: 5px; width: 8px; height: 8px; background: #fff; border-left: 1.2px solid #F4E4EA; border-bottom: 1.2px solid #F4E4EA; transform: skewY(-35deg); border-radius: 0 0 0 2px; }
+@keyframes pop { from { transform: scale(.6) translateY(6px); opacity: 0; } }
+.awayNote { position: absolute; left: 6px; top: 4px; display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--soft); line-height: 1.4; }
+.awayNote img { width: 52px; animation: nod 3s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes nod { 0%, 70%, 100% { transform: none; } 82% { transform: rotate(-6deg); } }
+/* 柜台面：木板，压在秤砣肚子前面 */
+.top { position: relative; z-index: 1; flex: 1; min-height: 0; margin-top: 86px; padding: 10px 10px 8px; border-radius: 8px; background: repeating-linear-gradient(transparent 0 22px, rgba(122, 80, 50, .12) 22px 23px), linear-gradient(#E4BE92, var(--wood) 14px, #BD8C5E); box-shadow: 0 -3px 0 #F0D2AE inset, 0 3px 0 var(--woodD);
+  display: flex; flex-direction: column; justify-content: center; }
+.tabs { display: flex; gap: 6px; justify-content: center; padding-top: 8px; }
+.tab { position: relative; padding: 4px 14px 3px 18px; border: none; border-radius: 4px 10px 10px 4px; background: #FFF6EE; color: var(--soft); font-size: 13px; cursor: pointer; box-shadow: 0 2px 0 #F0D2AE;
+  transform-origin: 0 50%; animation: tagIn .45s cubic-bezier(.3, 1.6, .5, 1) backwards; transition: transform .2s, background .2s; }
+.tab::before { content: ""; position: absolute; left: 6px; top: 50%; width: 5px; height: 5px; margin-top: -2.5px; border-radius: 50%; border: 1.2px solid var(--woodD); }
+.tab.on { background: var(--pink); color: #fff; font-weight: 700; transform: rotate(-3deg) translateY(-1px); box-shadow: 0 2px 0 #D66A8F; }
+.tab.on::before { border-color: #fff; }
+@keyframes tagIn { from { transform: translateY(14px) rotate(8deg); opacity: 0; } }
+
+/* 天平（黄铜） */
+.scale { position: relative; width: 240px; max-width: 100%; height: 136px; margin: 0 auto 20px; }
+.stand { position: absolute; left: 77.5px; top: 2px; width: 87.5px; height: auto; pointer-events: none; }
+.needle { position: absolute; left: 119px; top: 14px; width: 2px; height: 36px; border-radius: 1px; background: #7A4E2E; transform-origin: 50% 0; transition: transform .7s cubic-bezier(.3, 1.8, .5, 1); z-index: 1; }
+.beam { position: absolute; left: 28.5px; top: 1.4px; width: 183.5px; height: auto; transform-origin: 91.5px 12.6px; transition: transform .7s cubic-bezier(.3, 1.6, .5, 1); z-index: 2; pointer-events: none; }
+.pan { position: absolute; left: 0; top: 0; width: 76.5px; height: 98.5px; transition: transform .7s cubic-bezier(.3, 1.6, .5, 1); z-index: 3; }
+.pan > img:first-child { display: block; width: 100%; height: auto; pointer-events: none; }
+.askRow { position: absolute; left: 50%; bottom: -30px; z-index: 5; display: flex; gap: 8px; transform: translateX(-50%); white-space: nowrap; animation: pop .3s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+.askRow .btnGhost { margin-top: 0; }
+.onPan { position: absolute; z-index: 1; width: 38px; height: 26px; margin-left: -19px; object-fit: contain; image-rendering: pixelated; animation: drop .45s cubic-bezier(.4, 1.6, .6, 1) backwards; }
+@keyframes drop { from { transform: translateY(-60px) rotate(-20deg); opacity: 0; } 60% { opacity: 1; } }
+.onPan.gone { animation: gone .45s .25s ease-in forwards; }
+@keyframes gone { to { transform: translateY(-10px) scale(.4); opacity: 0; } }
+.onPan.back { animation: hopBack .6s ease-in forwards; }
+@keyframes hopBack { 40% { transform: translateY(-20px) rotate(10deg); } to { transform: translate(120px, -30px); opacity: 0; } }
+.pile { position: absolute; z-index: 1; width: 8px; height: 6px; border-radius: 50% 50% 45% 45%; background: linear-gradient(135deg, #fff 0 25%, #BFE3F2 45%, #9C8FE0 100%); box-shadow: 0 0 3px #CFE8FF; animation: pileIn .3s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+@keyframes pileIn { from { transform: translateY(-26px) rotate(90deg); opacity: 0; } }
+.plus { position: absolute; z-index: 4; left: 50%; top: 58px; transform: translateX(-50%); font-size: 20px; color: #fff; text-shadow: 0 2px 0 var(--pink), 0 0 8px rgba(235, 127, 163, .6); animation: plus 1.4s ease-out forwards; }
+@keyframes plus { 0% { transform: translate(-50%, 8px) scale(.6); opacity: 0; } 20% { transform: translate(-50%, 0) scale(1.15); opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(-50%, -16px); opacity: 0; } }
+.hint { position: absolute; left: 0; right: 0; bottom: -24px; text-align: center; font-size: 11px; color: #FFF6EE; opacity: .9; }
+/* 亮鳞飞进罐子（从柜台飞到右上角） */
+.flakes { position: absolute; left: 0; right: 0; top: 86px; bottom: 30px; pointer-events: none; z-index: 5; } /* 跟柜台面一样大，中心就是算 tx/ty 的起点 */
+.flakes i { position: absolute; left: 50%; top: 45%; width: 8px; height: 6px; margin-left: var(--x); border-radius: 50% 50% 45% 45%; background: linear-gradient(135deg, #fff 0 25%, #BFE3F2 45%, #9C8FE0 100%); box-shadow: 0 0 5px #CFE8FF;
+  opacity: 0; animation: flyX .95s var(--d) cubic-bezier(.45, 0, .7, 1) forwards; }
+@keyframes flyX { 0% { transform: translate(0, 0) rotate(0); opacity: 0; } 10% { opacity: 1; } 35% { transform: translate(calc(var(--tx) * .25), calc(var(--ty) * .1 + var(--arc))) rotate(160deg); } 90% { opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) rotate(540deg) scale(.5); opacity: 0; } }
+
+/* ── 右：货 ── */
+.goods { position: relative; min-height: 0; overflow-y: auto; padding: 4px 4px 6px; border-radius: 10px; background: #fff repeating-linear-gradient(transparent 0 33px, #F8EDF1 33px 34px); border: 1.2px dashed var(--stitch);
+  animation: pageIn .35s ease-out backwards; }
+.plain { background: #fff; } /* 木架那两页不要横线，跟木板打架 */
+@keyframes pageIn { from { transform: translateX(10px); opacity: 0; } }
+.sellTop { position: sticky; top: -4px; z-index: 2; display: flex; align-items: center; gap: 6px; padding: 4px 4px 6px; background: rgba(255, 255, 255, .94); font-size: 12px; color: var(--soft); }
+.sellTop img { width: 34px; margin: -8px 0 -6px; }
+.sellTop span { flex: 1; }
+.fishList { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.fishCard { position: relative; display: flex; align-items: center; gap: 6px; padding: 5px 8px 5px 5px; border-radius: 10px; border: 1.2px solid #F4E4EA; border-left: 4px solid var(--rc); background: #fff; cursor: pointer; text-align: left;
+  animation: cardIn .35s cubic-bezier(.3, 1.4, .5, 1) backwards; transition: transform .15s; }
+.fishCard:active:not(:disabled) { transform: scale(.95) rotate(-1deg); }
+.fishCard:disabled { cursor: default; }
+@keyframes cardIn { from { transform: translateY(10px); opacity: 0; } }
+.fishCard img { width: 36px; height: 24px; object-fit: contain; image-rendering: pixelated; flex: none; }
+.fishCard span { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3; }
+.fishCard b { font-size: 12.5px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fishCard em { font-style: normal; font-size: 10.5px; color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tag { flex: none; display: flex; align-items: center; gap: 2px; padding: 2px 7px 2px 5px; border-radius: 3px 9px 9px 3px; background: #FDECF1; color: #C9667F; font-size: 12px; font-weight: 700; }
+.keep { flex: none; font-size: 10.5px; color: var(--soft); }
+.sc { display: inline-block; width: 8px; height: 10px; border-radius: 50% 50% 45% 45%; background: linear-gradient(135deg, #fff 0 25%, #BFE3F2 45%, #9C8FE0 100%); vertical-align: -1px; }
+.empty { margin: 30px 4px; font-size: 12.5px; line-height: 1.7; color: var(--soft); text-align: center; }
+.shutter { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 9px; color: #FFF6EE;
+  background: repeating-linear-gradient(#B98C6A 0 10px, #A77A58 10px 12px); animation: shutter .6s cubic-bezier(.3, 1.3, .5, 1) backwards; transform-origin: 50% 0; }
+.shutter b { font-size: 16px; letter-spacing: .2em; } .shutter span { font-size: 11.5px; }
+@keyframes shutter { from { transform: scaleY(0); } }
+
+.btnMain, .btnGhost { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 3px; padding: 5px 14px; border-radius: 999px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; border: none; }
+.btnMain { color: #fff; background: linear-gradient(#F59AB8, var(--pink)); box-shadow: 0 2px 0 #D66A8F; }
+.btnMain:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 0 0 #D66A8F; }
+.btnGhost { margin-top: 6px; background: #FFF6EE; color: var(--ink); box-shadow: 0 2px 0 #F0D2AE; font-weight: 500; }
+.btnMain:disabled, .btnGhost:disabled { opacity: .5; }
+
+/* 木架：一格一张贴纸立在木板上（饵、钓具共用） */
+.shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 10px 6px; padding: 12px 2px 4px; }
+.item { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 4px 2px 5px; border: none; border-radius: 10px; background: transparent; cursor: pointer; font: inherit;
+  animation: cardIn .4s cubic-bezier(.3, 1.4, .5, 1) backwards; transition: background .2s; }
+.itemArt { position: relative; z-index: 1; display: flex; align-items: flex-end; justify-content: center; width: 64px; height: 54px; }
+.itemArt img { max-width: 58px; max-height: 52px; object-fit: contain; filter: drop-shadow(0 2px 1px rgba(122, 80, 50, .18)); transform-origin: 50% 100%; transition: transform .25s cubic-bezier(.3, 1.6, .5, 1); }
+.item::after { content: ""; position: absolute; left: 6px; right: 6px; top: 56px; height: 5px; border-radius: 3px; background: var(--wood); box-shadow: 0 2px 0 var(--woodD); z-index: 0; } /* 木板 */
+.item b { position: relative; z-index: 1; margin-top: 8px; max-width: 100%; font-size: 11.5px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.item small { font-size: 10.5px; color: #C9667F; font-weight: 700; }
+.item.owned small { color: var(--blue); font-weight: 500; }
+.itemOn { background: #FDECF1; }
+.itemOn .itemArt img { animation: itemHop .55s cubic-bezier(.3, 1.8, .5, 1); }
+@keyframes itemHop { 40% { transform: translateY(-8px) rotate(-6deg) scale(1.06); } }
+.item:active .itemArt img { transform: scale(.92); }
+.off { opacity: .5; }
+.have { position: absolute; z-index: 2; right: 6px; top: 2px; padding: 0 5px; border-radius: 8px; background: var(--blue); color: #fff; font-style: normal; font-size: 10px; font-weight: 700; }
+.usingTag { position: absolute; z-index: 2; left: 4px; top: 2px; padding: 0 5px; border-radius: 3px; background: var(--pink); color: #fff; text-decoration: none; font-size: 10px; transform: rotate(-8deg); }
+.gearShelves { display: flex; flex-direction: column; gap: 2px; }
+.gearShelves section { position: relative; }
+.shelfName { position: sticky; top: -4px; z-index: 3; display: inline-block; margin: 2px 0 -8px 4px; padding: 1px 9px 1px 7px; border-radius: 3px 9px 9px 3px; background: #FFF6EE; box-shadow: 0 1.5px 0 #F0D2AE; font-style: normal; font-size: 11px; color: var(--soft); letter-spacing: .1em; }
+.deskArt { display: block; width: 76px; height: 76px; object-fit: contain; filter: drop-shadow(0 3px 2px rgba(90, 60, 30, .25)); animation: onTray .45s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+.baitDesk, .gearDesk { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; min-height: 100%; justify-content: center; }
+.deskRow { display: flex; align-items: flex-end; gap: 22px; }
+.deskJar { position: relative; }
+/* 勺子：从罐口舀一勺 → 弧线飞到纸袋 → 倒 → 回来，重复 n 次 */
+.spoon { position: absolute; z-index: 4; left: 50%; top: -6px; width: 16px; height: 10px; margin-left: -8px; border-radius: 0 0 9px 9px; background: #EADCC8; box-shadow: inset 0 -4px 0 var(--a);
+  animation: scoopArc var(--per) ease-in-out both; }
+.spoon::after { content: ""; position: absolute; left: 13px; top: -8px; width: 3px; height: 12px; border-radius: 2px; background: #C9B8A0; transform: rotate(35deg); }
+@keyframes scoopArc { 0% { transform: translate(0, 10px); } 30% { transform: translate(10px, -22px) rotate(-10deg); } 65% { transform: translate(72px, -8px) rotate(60deg); } 80% { transform: translate(72px, -4px) rotate(95deg); box-shadow: inset 0 0 0 transparent; } 100% { transform: translate(0, 10px); } }
+.bag { position: relative; width: 58px; height: 64px; border-radius: 4px 4px 8px 8px; background: #F3E3C8; box-shadow: inset 0 -3px 0 #E2CBA4; display: flex; align-items: center; justify-content: center; overflow: visible;
+  transform-origin: 50% 100%; animation: bagPuff var(--per) ease-out both; }
+.bag b { position: relative; z-index: 2; font-size: 11px; color: #9C6E48; }
+@keyframes bagPuff { 0%, 70% { transform: scale(1); } 82% { transform: scale(1.08, .94); } 100% { transform: scale(1); } }
+.bagFill { position: absolute; left: 3px; right: 3px; bottom: 3px; height: 0; border-radius: 3px; background: var(--a); opacity: .4; transition: height 0s linear; }
+.bagTop { position: absolute; left: 0; right: 0; top: -6px; height: 8px; background: repeating-linear-gradient(90deg, #F3E3C8 0 4px, #E9D4B0 4px 8px); clip-path: polygon(0 100%, 6% 0, 12% 100%, 18% 0, 24% 100%, 30% 0, 36% 100%, 42% 0, 48% 100%, 54% 0, 60% 100%, 66% 0, 72% 100%, 78% 0, 84% 100%, 90% 0, 96% 100%, 100% 30%, 100% 100%); transform-origin: 50% 100%; transition: transform .35s; }
+.sealed .bagTop { transform: rotateX(180deg) translateY(-2px); background: #E2CBA4; }
+.stampMark { position: absolute; z-index: 3; right: -10px; top: 8px; padding: 1px 4px; border: 1.5px solid #D66A8F; border-radius: 4px; color: #D66A8F; font-style: normal; font-size: 11px; font-weight: 700; transform: rotate(-14deg); animation: stampIn .3s .35s cubic-bezier(.3, 1.8, .5, 1) backwards; }
+@keyframes stampIn { from { transform: rotate(-14deg) scale(2.2); opacity: 0; } }
+.shake { animation: shake .45s ease-in-out; }
+@keyframes shake { 20%, 60% { transform: translateX(-4px) rotate(-2deg); } 40%, 80% { transform: translateX(4px) rotate(2deg); } }
+.note { margin: 2px 0 0; font-size: 11px; line-height: 1.45; color: #FFF6EE; text-align: center; text-shadow: 0 1px 0 rgba(122, 80, 50, .5); }
+.note b { font-size: 12.5px; }
+.buyRow { display: flex; align-items: center; gap: 8px; }
+.stepper { display: flex; align-items: center; gap: 3px; padding: 2px; border-radius: 999px; background: #FFF6EE; box-shadow: 0 2px 0 #F0D2AE; }
+.stepper button { width: 24px; height: 24px; border: none; border-radius: 50%; background: #FDECF1; color: #C9667F; font-size: 15px; font-weight: 700; line-height: 1; cursor: pointer; }
+.stepper button:disabled { opacity: .4; }
+.stepper b { min-width: 18px; text-align: center; font-size: 14px; color: var(--ink); animation: pop .25s cubic-bezier(.3, 1.8, .5, 1); }
+.stepper span { font-size: 11px; color: var(--soft); margin-right: 3px; }
+.onNote { font-size: 11px; color: #FFF6EE; padding: 2px 9px; border-radius: 9px; background: rgba(122, 92, 104, .28); }
+
+.tray { position: relative; padding: 6px 14px 2px; border-radius: 10px; background: #FDECF1; box-shadow: 0 3px 0 #D66A8F; animation: onTray .45s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+@keyframes onTray { from { transform: translateY(-40px) rotate(-10deg); opacity: 0; } }
+/* 包起来：两片包装纸从两边合上，蝴蝶结弹出来 */
+.paperL, .paperR { position: absolute; top: 0; bottom: 0; width: 50%; background: repeating-linear-gradient(45deg, #FFF6EE 0 6px, #FDE3EC 6px 12px); opacity: 0; pointer-events: none; }
+.paperL { left: 0; border-radius: 10px 0 0 10px; transform-origin: 0 50%; } .paperR { right: 0; border-radius: 0 10px 10px 0; transform-origin: 100% 50%; }
+.bow { position: absolute; left: 50%; top: 50%; width: 22px; height: 12px; margin: -6px 0 0 -11px; opacity: 0; pointer-events: none;
+  background: radial-gradient(circle at 25% 50%, var(--pink) 5px, transparent 5.5px), radial-gradient(circle at 75% 50%, var(--pink) 5px, transparent 5.5px), radial-gradient(circle, #D66A8F 3px, transparent 3.5px); }
+.wrapping .paperL { animation: wrapL .45s ease-in forwards; } .wrapping .paperR { animation: wrapR .45s .08s ease-in forwards; }
+.wrapping .bow { animation: bowIn .4s .5s cubic-bezier(.3, 1.8, .5, 1) forwards; }
+.opening .paperL { animation: unwrapL .4s ease-out forwards; } .opening .paperR { animation: unwrapR .4s ease-out forwards; } .opening .bow { animation: bowOut .3s ease-in forwards; }
+@keyframes unwrapL { from { transform: none; opacity: 1; } to { transform: rotateY(90deg); opacity: 1; } }
+@keyframes unwrapR { from { transform: none; opacity: 1; } to { transform: rotateY(-90deg); opacity: 1; } }
+@keyframes bowOut { from { transform: scale(1.3); opacity: 1; } to { transform: scale(0) translateY(-10px); opacity: 0; } }
+@keyframes wrapL { from { transform: rotateY(90deg); opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes wrapR { from { transform: rotateY(-90deg); opacity: 1; } to { transform: none; opacity: 1; } }
+@keyframes bowIn { from { transform: scale(0) rotate(-40deg); opacity: 1; } to { transform: scale(1.3); opacity: 1; } }
+
+@media (max-height: 340px) { .top { margin-top: 70px; } .pelWrap { transform: scale(.85); transform-origin: 0 0; } .say { left: 84px; } }
+@media (max-width: 560px) { .stall { height: min(680px, calc(100% - 14px)); } .body { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); } .counter { min-height: 290px; } .jar small { display: none; } .sign span { display: none; } }
+@media (prefers-reduced-motion: reduce) { .mask *, .mask { animation-duration: .01s !important; animation-delay: 0s !important; } }
+
+/* ── 杂货：钉板 + 小橱窗 ── */
+.misc { display: flex; flex-direction: column; gap: 4px; }
+.misc section { position: relative; }
+/* 钉板：一块软木色的洞洞板，每样挂在一颗小钉子上，一根麻绳吊着，风一吹一样一样轮流晃 */
+.peg { display: grid; grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)); gap: 6px; margin-top: 12px; padding: 10px 6px 8px; border-radius: 10px;
+  background: radial-gradient(circle, #B98D62 1.4px, transparent 1.8px) 0 0 / 14px 14px, linear-gradient(#E4C49C, #D9B488); box-shadow: inset 0 0 0 2px #C69A6C, 0 3px 0 #B0845A; }
+.hook { position: relative; display: flex; flex-direction: column; align-items: center; padding: 0 2px 4px; border: 0; background: transparent; font: inherit; cursor: pointer; animation: hookIn .5s calc(var(--i) * .07s) cubic-bezier(.3, 1.6, .5, 1) backwards; }
+@keyframes hookIn { from { transform: translateY(-16px); opacity: 0; } }
+.pin { width: 7px; height: 7px; border-radius: 50%; background: #8A6A4A; box-shadow: inset -1px -1px 0 #5E4430, 0 1px 0 rgba(255, 255, 255, .4); }
+.twine { width: 1.5px; height: 8px; background: #A07A50; }
+.hang { display: flex; justify-content: center; align-items: flex-start; height: 52px; transform-origin: 50% -10px; animation: sway 3.2s calc(var(--i) * .4s) ease-in-out infinite; }
+.hang img { max-width: 54px; max-height: 50px; object-fit: contain; filter: drop-shadow(0 2px 1px rgba(90, 60, 30, .25)); }
+@keyframes sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+.hook b { margin-top: 3px; font-size: 11px; color: #5E4430; white-space: nowrap; }
+.hook small { font-size: 10.5px; font-weight: 700; color: #B04A6A; }
+.hookOn .hang { animation: hopOff .5s cubic-bezier(.3, 1.8, .5, 1); }
+.hookOn { background: rgba(255, 246, 238, .55); border-radius: 10px; }
+@keyframes hopOff { 30% { transform: translateY(-10px) rotate(-14deg); } 60% { transform: translateY(6px) rotate(8deg); } }
+/* 小橱窗：一扇有木框的玻璃窗，一道反光慢慢扫过；每样摆设都在动 */
+.vitrine { position: relative; overflow: hidden; display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; margin-top: 12px; padding: 12px 6px 8px; border-radius: 12px 12px 6px 6px;
+  background: linear-gradient(180deg, #EEF6FB, #FDF3F6); box-shadow: inset 0 0 0 4px #C99E72, inset 0 0 0 6px #E9CFA8, 0 3px 0 #B0845A; }
+.glare { position: absolute; top: -20%; left: -40%; width: 30%; height: 140%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .75), transparent); transform: rotate(18deg); animation: glare 5s ease-in-out infinite; pointer-events: none; z-index: 2; }
+@keyframes glare { 0%, 60% { left: -40%; } 100% { left: 130%; } }
+.show { position: relative; display: flex; flex-direction: column; align-items: center; padding: 2px 2px 4px; border: 0; border-radius: 10px; background: transparent; font: inherit; cursor: pointer; animation: hookIn .5s calc(.2s + var(--i) * .08s) cubic-bezier(.3, 1.6, .5, 1) backwards; }
+.showArt { display: flex; align-items: flex-end; justify-content: center; height: 58px; }
+.showArt img { max-width: 60px; max-height: 56px; object-fit: contain; filter: drop-shadow(0 3px 2px rgba(90, 60, 30, .22)); }
+.show b { font-size: 11px; color: #5E4430; white-space: nowrap; }
+.show small { font-size: 10.5px; font-weight: 700; color: #B04A6A; }
+.showOn { background: rgba(255, 255, 255, .7); }
+.d_fish_chime .showArt img { transform-origin: 50% 0; animation: sway 2.2s ease-in-out infinite; }
+.d_lanterns .showArt img { animation: glowY 2.4s ease-in-out infinite; }
+@keyframes glowY { 50% { filter: drop-shadow(0 0 7px rgba(255, 200, 120, .95)) drop-shadow(0 3px 2px rgba(90, 60, 30, .22)); } }
+.d_fishbone_clock .showArt img { animation: tock 2s steps(2) infinite; }
+@keyframes tock { 50% { transform: rotate(2deg); } }
+.d_shell_frame .showArt::after { content: "✦"; position: absolute; margin: -44px 0 0 34px; font-size: 11px; color: #F4B9CB; animation: twinkle 1.8s ease-in-out infinite; }
+.d_shell_frame .showArt { position: relative; }
+@keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(.5); } 50% { opacity: 1; transform: scale(1.2); } }
+.d_glass_float .showArt img { animation: glowB 3s ease-in-out infinite; }
+@keyframes glowB { 50% { filter: drop-shadow(0 0 8px rgba(150, 210, 255, .95)) drop-shadow(0 3px 2px rgba(90, 60, 30, .22)); transform: translateY(-2px); } }
+/* 柜台上：从钩子上跳下来落到托盘上 */
+.hopDown .deskArt { animation: hopDown .6s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+@keyframes hopDown { 0% { transform: translate(60px, -70px) rotate(20deg) scale(.6); opacity: 0; } 55% { transform: translate(0, 4px) rotate(-6deg) scale(1.05); opacity: 1; } }
+
+/* 杂货页的小标题下滑时一直粘在顶上压着货 → 跟着内容一起滚 */
+.misc .shelfName { position: relative; top: 0; }

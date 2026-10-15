@@ -1,0 +1,117 @@
+/* 布袋 + 用道具的动画 + 怀表 */
+.mask { position: absolute; inset: 0; z-index: 22; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 18px; background: rgba(74, 64, 69, .26); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); animation: fade .25s ease-out backwards; }
+.maskOut { animation: fadeOut .3s ease-in forwards; }
+.maskOut .bag { animation: bagDown .3s ease-in forwards; }
+@keyframes fade { from { opacity: 0; } }
+@keyframes fadeOut { to { opacity: 0; } }
+
+/* 布袋：粗麻布色、顶上一圈抽绳，从下面弹上来，袋口先收着再「松开」 */
+.bag { position: relative; width: min(420px, calc(100% - 32px)); max-height: 78%; overflow: auto; padding: 26px 16px 16px; border-radius: 26px 26px 20px 20px;
+  background: radial-gradient(circle at 20% 10%, rgba(255, 255, 255, .5), transparent 40%), repeating-linear-gradient(45deg, #F6E7D2 0 3px, #F1DFC6 3px 6px);
+  border: 2px dashed #D9B99A; box-shadow: 0 8px 0 rgba(160, 120, 90, .25), 0 18px 34px rgba(60, 40, 30, .28); animation: bagUp .5s cubic-bezier(.3, 1.5, .5, 1) backwards; transform-origin: 50% 100%; }
+@keyframes bagUp { from { transform: translateY(70%) scaleY(.6); opacity: 0; } 60% { transform: translateY(-4%) scaleY(1.05); } }
+@keyframes bagDown { to { transform: translateY(60%) scaleY(.7); opacity: 0; } }
+.cord { position: absolute; left: 12%; right: 12%; top: 8px; height: 8px; border-top: 3px solid #E58FAE; border-radius: 50%; animation: cordOpen .6s .15s ease-out backwards; }
+.cord i { position: absolute; top: -2px; width: 10px; height: 10px; border-radius: 50%; background: #F4A7BE; box-shadow: 0 2px 0 #D77C9C; }
+.cord i:first-child { left: -6px; } .cord i:last-child { right: -6px; }
+@keyframes cordOpen { from { left: 38%; right: 38%; } }
+.bagHead { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; color: #8A5A45; }
+.bagHead img { width: 30px; animation: wob 2.4s ease-in-out infinite; }
+.bagHead b { font-size: 16px; letter-spacing: .12em; }
+.bagHead small { flex: 1; font-size: 11px; color: #A98572; }
+.bagHead button { width: 30px; height: 30px; border-radius: 50%; border: 1.3px dashed #D9B99A; background: #FFFBF4; color: #8A5A45; font-size: 17px; }
+@keyframes wob { 50% { transform: rotate(-8deg) translateY(-2px); } }
+.empty { text-align: center; padding: 18px 0; font-size: 13px; line-height: 1.7; color: #A98572; }
+.list { display: flex; flex-direction: column; gap: 8px; }
+.row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: rgba(255, 252, 246, .9); border: 1.2px dashed #EACFB8; animation: peek .45s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+@keyframes peek { from { transform: translateY(22px) scale(.8); opacity: 0; } }
+.pic { position: relative; width: 50px; height: 50px; flex: none; display: grid; place-items: center; }
+.pic img { max-width: 48px; max-height: 48px; transition: transform .2s; }
+.row:active .pic img { transform: scale(1.12) rotate(-6deg); }
+.pic em { position: absolute; right: -6px; bottom: -4px; font-style: normal; font-size: 11px; font-weight: 800; color: #fff; background: #E58FAE; border-radius: 9px; padding: 1px 6px; }
+.txt { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.txt b { font-size: 13.5px; color: #7A5C68; }
+.txt small { font-size: 11px; color: #A08A92; line-height: 1.35; }
+.use { flex: none; padding: 7px 16px; border-radius: 14px; font-size: 13px; font-weight: 800; letter-spacing: .2em; color: #fff; background: #F09BB6; border: 0; box-shadow: 0 3px 0 #D97798; transition: transform .15s; }
+.use:active { transform: translateY(2px); box-shadow: 0 1px 0 #D97798; }
+.use:disabled { opacity: .5; }
+
+/* ── 用道具的动画（盖整个画面，不挡点击） ── */
+.fx { position: absolute; inset: 0; z-index: 35; pointer-events: none; overflow: hidden; }
+.fxText { position: absolute; left: 50%; top: 62%; transform: translateX(-50%); max-width: 80%; margin: 0; padding: 8px 16px; border-radius: 12px; font-size: 13.5px; font-weight: 700; line-height: 1.5; text-align: center; color: #7A5C68;
+  background: #FFFDF8; border: 1.4px dashed #F2B6C8; box-shadow: 0 4px 12px rgba(60, 40, 50, .18); animation: txtIn 3.4s ease both; }
+@keyframes txtIn { 0%, 30% { opacity: 0; transform: translate(-50%, 10px); } 40%, 88% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
+
+/* 晴天娃娃：从顶上垂下来晃，云往两边推开，太阳亮起来 */
+.doll { position: absolute; left: 50%; top: 0; transform-origin: 50% 0; animation: dollDrop 3.4s cubic-bezier(.3, 1.4, .5, 1) both; }
+.doll img { display: block; width: 74px; margin-left: -37px; }
+.string { position: absolute; left: 0; top: -120px; width: 2px; height: 124px; background: #E58FAE; }
+@keyframes dollDrop { 0% { transform: translateY(-140px); } 18% { transform: translateY(40px) rotate(0); } 28% { transform: translateY(40px) rotate(14deg); } 38% { transform: translateY(40px) rotate(-10deg); } 48% { transform: translateY(40px) rotate(6deg); } 56%, 86% { transform: translateY(40px) rotate(0); } 100% { transform: translateY(-140px); } }
+.cloud { position: absolute; top: 4%; width: 56%; height: 34%; background: radial-gradient(ellipse at 50% 60%, rgba(236, 236, 246, .95) 0 45%, rgba(236, 236, 246, 0) 70%); animation: 3.4s ease-in-out both; }
+.cloudL { left: -2%; animation-name: pushL; } .cloudR { right: -2%; animation-name: pushR; }
+@keyframes pushL { 0%, 30% { transform: translateX(0); opacity: 1; } 70% { transform: translateX(-80%); opacity: .2; } 100% { transform: translateX(-100%); opacity: 0; } }
+@keyframes pushR { 0%, 30% { transform: translateX(0); opacity: 1; } 70% { transform: translateX(80%); opacity: .2; } 100% { transform: translateX(100%); opacity: 0; } }
+.sun { position: absolute; left: 50%; top: 10%; width: 220px; height: 220px; margin-left: -110px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 236, 160, .9) 0 18%, rgba(255, 214, 120, .35) 40%, rgba(255, 214, 120, 0) 70%); animation: sunUp 3.4s ease both; }
+@keyframes sunUp { 0%, 35% { opacity: 0; transform: scale(.4); } 60% { opacity: 1; transform: scale(1.08); } 85% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
+
+/* 雨壶：壶一歪，水一串串倒下去 */
+.pot { position: absolute; left: 50%; top: 22%; animation: potTilt 3.4s ease both; transform-origin: 70% 60%; }
+.pot img { display: block; width: 96px; margin-left: -48px; }
+@keyframes potTilt { 0% { transform: translateY(-60px) rotate(0); opacity: 0; } 12% { transform: translateY(0) rotate(0); opacity: 1; } 25%, 70% { transform: rotate(-28deg); } 90% { transform: rotate(0); opacity: 1; } 100% { opacity: 0; } }
+.drop { position: absolute; left: -46px; top: 50px; width: 4px; height: 9px; border-radius: 3px 3px 5px 5px; background: #9FD6F2; opacity: 0; animation: pour .7s calc(.8s + var(--i) * .12s) ease-in 1 both; }
+@keyframes pour { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(-10px, 180px); } }
+
+/* 包装纸：两片粉纸从两边卷过来包住，最后系一个蝴蝶结 */
+.wrapBox { position: absolute; left: 50%; top: 28%; width: 120px; height: 90px; margin-left: -60px; }
+.paperL, .paperR { position: absolute; top: 0; width: 60px; height: 90px; background: repeating-linear-gradient(45deg, #FFD3E1 0 8px, #FFE4EC 8px 16px); border: 1.5px solid #F2A7C0; animation: 3.4s cubic-bezier(.3, 1.3, .5, 1) both; }
+.paperL { left: 0; border-radius: 10px 0 0 10px; animation-name: wrapL; transform-origin: 0 50%; }
+.paperR { right: 0; border-radius: 0 10px 10px 0; animation-name: wrapR; transform-origin: 100% 50%; }
+@keyframes wrapL { 0% { transform: translateX(-120px) rotate(-30deg); opacity: 0; } 25%, 88% { transform: none; opacity: 1; } 100% { opacity: 0; } }
+@keyframes wrapR { 0%, 10% { transform: translateX(120px) rotate(30deg); opacity: 0; } 32%, 88% { transform: none; opacity: 1; } 100% { opacity: 0; } }
+.bowTie { position: absolute; left: 50%; top: -18px; width: 58px; margin-left: -29px; animation: bowPop 3.4s cubic-bezier(.3, 1.8, .5, 1) both; }
+@keyframes bowPop { 0%, 38% { transform: scale(0) rotate(-40deg); opacity: 0; } 50%, 88% { transform: scale(1) rotate(0); opacity: 1; } 100% { opacity: 0; } }
+
+/* 鱼拓纸：一张米白纸落下来，一只手掌按一下，揭起来是墨色的鱼印 */
+.rub { position: absolute; left: 50%; top: 20%; width: 160px; margin-left: -80px; }
+.rubPaper { position: relative; height: 110px; border-radius: 4px; background: #FBF5E6; box-shadow: 0 4px 10px rgba(60, 50, 30, .2); animation: paperDown 3.4s ease both; }
+@keyframes paperDown { 0% { transform: translateY(-100px) rotate(-6deg); opacity: 0; } 15% { transform: translateY(0) rotate(-2deg); opacity: 1; } 55% { transform: rotate(-2deg); } 70% { transform: translateY(-14px) rotate(3deg); } 88% { opacity: 1; transform: translate(80px, -60px) rotate(12deg) scale(.6); } 100% { opacity: 0; transform: translate(120px, -90px) rotate(16deg) scale(.4); } }
+.ink { position: absolute; left: 20px; right: 20px; top: 26px; height: 56px; opacity: 0; background: #3A3440; -webkit-mask: radial-gradient(ellipse 42% 46% at 44% 50%, #000 96%, transparent 100%), radial-gradient(ellipse 12% 30% at 90% 50%, #000 96%, transparent 100%); mask: radial-gradient(ellipse 42% 46% at 44% 50%, #000 96%, transparent 100%), radial-gradient(ellipse 12% 30% at 90% 50%, #000 96%, transparent 100%); animation: ink 3.4s ease both; }
+@keyframes ink { 0%, 45% { opacity: 0; } 60% { opacity: .85; } 100% { opacity: .85; } }
+.press { position: absolute; left: 50%; top: 10px; width: 70px; height: 70px; margin-left: -35px; border-radius: 50%; background: radial-gradient(circle, #F7C9D8 0 55%, #E8A3BA 56% 62%, transparent 64%); animation: press 3.4s ease both; }
+@keyframes press { 0%, 18% { transform: translateY(-120px); opacity: 0; } 32% { transform: translateY(0) scale(1.1); opacity: 1; } 40% { transform: translateY(6px) scale(.92); } 50% { transform: translateY(-120px); opacity: 0; } 100% { opacity: 0; } }
+
+/* 小道消息：秤砣的信封从右边探出来，上面冒一个「嘘——」的气泡 */
+.rumor { position: absolute; right: 12%; top: 26%; display: flex; align-items: flex-start; gap: 6px; animation: sneak 3.4s cubic-bezier(.3, 1.4, .5, 1) both; }
+.pelPeek { width: 96px; height: 111px; background-repeat: no-repeat; background-size: 288px auto; background-position: 0 -444px; image-rendering: pixelated; animation: peekHead 1.2s steps(1) infinite; } /* 秤砣探头（pelican_acts 的 peek 那一行） */
+@keyframes peekHead { 0% { background-position-x: 0; } 33% { background-position-x: -96px; } 66% { background-position-x: -192px; } }
+@keyframes sneak { 0% { transform: translateX(160px); } 18%, 85% { transform: translateX(0); } 100% { transform: translateX(160px); } }
+.whisper { padding: 6px 12px; border-radius: 14px 14px 14px 2px; background: #FFFDF8; border: 1.3px dashed #C9B3D8; font-size: 13px; font-weight: 700; color: #8A6A9A; animation: bub 3.4s ease both; }
+.whisper i { font-style: normal; display: inline-block; animation: hush .8s ease-in-out infinite; }
+@keyframes bub { 0%, 20% { transform: scale(0); } 30%, 85% { transform: scale(1); } 100% { transform: scale(0); } }
+@keyframes hush { 50% { transform: translateY(-2px); letter-spacing: .15em; } }
+
+/* ── 怀表 ── */
+.watchWrap { position: relative; }
+.watch { position: relative; width: 44px; height: 44px; padding: 0; border: 0; background: none; animation: swingW 3s ease-in-out infinite; transform-origin: 50% 0; }
+.watch img { width: 44px; height: 44px; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(60, 40, 20, .25)); }
+.hand { position: absolute; left: 50%; top: 58%; width: 1.5px; height: 9px; margin-left: -.75px; background: #6B4A2A; transform-origin: 50% 100%; translate: 0 -100%; animation: tickH 4s steps(8) infinite; }
+.watch em { position: absolute; left: -6px; top: -4px; min-width: 16px; height: 16px; border-radius: 8px; font-style: normal; font-size: 10px; font-weight: 800; line-height: 16px; color: #fff; background: #F09BB6; }
+.watchBusy { animation: swingW 3s ease-in-out infinite, buzz 2.6s ease-in-out infinite; }
+@keyframes swingW { 50% { transform: rotate(6deg); } }
+@keyframes tickH { to { transform: rotate(360deg); } }
+@keyframes buzz { 0%, 86%, 100% { translate: 0 0; } 88% { translate: -1px 0; } 90% { translate: 1px 0; } 92% { translate: -1px 0; } }
+.face { position: absolute; right: 0; top: 50px; z-index: 8; width: 220px; padding: 14px 12px 12px; border-radius: 50% 50% 22px 22px / 26px 26px 22px 22px; background: radial-gradient(circle at 50% 0%, #FFF9EC, #F8EBD2); border: 3px solid #D2A860; box-shadow: inset 0 0 0 2px #F3DDA8, 0 8px 20px rgba(60, 40, 20, .28); animation: faceOpen .45s cubic-bezier(.3, 1.5, .5, 1) backwards; transform-origin: 100% 0; }
+@keyframes faceOpen { from { transform: scale(.2) rotate(-12deg); opacity: 0; } }
+.lid { position: absolute; left: 10%; right: 10%; top: -14px; height: 18px; border-radius: 50% 50% 0 0; background: linear-gradient(#E8C47A, #C99A4E); border: 2px solid #B3863F; transform-origin: 50% 100%; animation: lidPop .5s cubic-bezier(.3, 1.6, .5, 1) both; }
+@keyframes lidPop { from { transform: rotateX(0); } to { transform: rotateX(70deg) translateY(-6px); } }
+.faceTtl { display: block; text-align: center; font-size: 12px; letter-spacing: .12em; color: #9A7440; margin-bottom: 6px; }
+.quiet { margin: 6px 0; text-align: center; font-size: 12px; line-height: 1.6; color: #A99070; }
+.spec { display: flex; align-items: center; gap: 8px; padding: 5px 4px; border-top: 1px dashed #E6CFA6; animation: peek .4s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+.shadow { width: 46px; filter: brightness(0) opacity(.55); animation: swimS 2.8s ease-in-out infinite; }
+@keyframes swimS { 0%, 100% { transform: translate(-3px, 0); } 50% { transform: translate(3px, -1px); } }
+.spec span { display: flex; flex-direction: column; min-width: 0; }
+.spec b { font-size: 12.5px; color: #6B4A2A; }
+.spec em { font-style: normal; font-size: 10px; color: #E0A43C; }
+.spec small { font-size: 11px; color: #9A8060; }
+
+.inkFish { position: absolute; left: 50%; top: 50%; width: 110px; translate: -50% -50%; image-rendering: pixelated; filter: grayscale(1) brightness(.32) contrast(1.6); mix-blend-mode: multiply; opacity: 0; animation: ink 3.4s ease both; } /* 拓出来的就是玩家最重那条鱼的样子，墨色 */

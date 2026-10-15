@@ -1,0 +1,8 @@
+.page { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px 16px; }
+.title { margin: 0; font-size: 28px; color: var(--pink-deep, #c45c7e); letter-spacing: .1em; }
+.sub { margin: 0 0 10px; color: var(--text-soft, #9a7a84); font-size: 14px; }
+.field { display: flex; flex-direction: column; gap: 6px; width: min(360px, 100%); font-size: 13px; color: var(--text-soft, #9a7a84); }
+.field input { height: 42px; padding: 0 12px; border: 1.5px solid var(--pink, #f2b2c6); border-radius: 12px; background: #fff; font: inherit; font-size: 15px; color: var(--text, #5a4a50); }
+.go { width: min(360px, 100%); height: 44px; border: 0; border-radius: 22px; background: var(--pink-deep, #e98fae); color: #fff; font: inherit; font-size: 16px; letter-spacing: .2em; }
+.go:disabled { opacity: .6; }
+.err { margin: 0; color: #c9636f; font-size: 13px; }

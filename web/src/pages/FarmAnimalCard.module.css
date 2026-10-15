@@ -1,0 +1,27 @@
+/* 农场小动物：头顶气泡的内容 + 点开的大图卡片 */
+.aBub { display: inline-flex; align-items: center; justify-content: center; gap: 2px; min-width: 30px; padding: 3px 9px; font-size: 14px; line-height: 1.3; animation: aPop .32s cubic-bezier(.3, 1.6, .5, 1) both; transform-origin: 50% 100%; }
+.aBub b { font-weight: 800; color: #7A5C68; }
+.z1, .z2 { color: #8A86C4 !important; font-size: 13px; animation: zz 1.2s ease-in-out infinite; }
+.z2 { font-size: 11px; animation-delay: .4s; }
+.star { width: 15px; height: 15px; animation: tw 1s ease-in-out infinite; }
+.star2 { width: 11px; height: 11px; animation-delay: .5s; }
+@keyframes aPop { 0% { transform: scale(.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes zz { 0%, 100% { transform: translateY(1px); opacity: .7; } 50% { transform: translateY(-2px); opacity: 1; } }
+@keyframes tw { 0%, 100% { transform: scale(1) rotate(0); } 50% { transform: scale(1.18) rotate(12deg); } }
+
+.veil { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; background: rgba(90, 60, 80, .18); animation: fade .2s ease-out both; }
+.card { position: relative; isolation: isolate; width: min(300px, calc(100% - 32px)); max-height: calc(100% - 24px); overflow: hidden; box-sizing: border-box; padding: 16px 18px 18px; border-radius: 22px; background: #FFFDF8;
+  box-shadow: 0 3px 0 rgba(242, 182, 200, .55), 0 10px 26px rgba(70, 40, 60, .22); text-align: center; animation: cardIn .38s cubic-bezier(.3, 1.5, .5, 1) both; }
+.card::before { content: ""; position: absolute; inset: 5px; border: 1.6px dashed #F2B6C8; border-radius: 18px; pointer-events: none; }
+.x { position: absolute; right: 10px; top: 8px; z-index: 2; width: 30px; height: 30px; border: 0; border-radius: 50%; background: transparent; color: #C79AAB; font-size: 22px; line-height: 1; cursor: pointer; }
+.pic { height: min(170px, 36vh); display: flex; align-items: flex-end; justify-content: center; margin-top: 4px; }
+.pic img { height: 100%; width: auto; max-width: 100%; object-fit: contain; animation: bob 3s ease-in-out infinite; transform-origin: 50% 100%; -webkit-user-drag: none; }
+.heng { width: 192px; height: 96px; background-size: 576px 96px; background-position: 0 0; background-repeat: no-repeat; image-rendering: pixelated; animation: bob 3s ease-in-out infinite; transform-origin: 50% 100%; }
+.name { margin-top: 8px; font-size: 22px; font-weight: 800; letter-spacing: .14em; color: #5A4650; font-family: "Kaiti SC", "STKaiti", "KaiTi", var(--font); }
+.who { margin-top: 2px; font-size: 11.5px; color: #B49AA6; letter-spacing: .04em; }
+.line { margin-top: 10px; min-height: 22px; font-size: 15px; line-height: 1.5; color: #8C6E7B; font-family: "Kaiti SC", "STKaiti", "KaiTi", var(--font); animation: lineIn .45s ease-out both; }
+@keyframes fade { from { opacity: 0; } }
+@keyframes cardIn { 0% { transform: scale(.55) rotate(-4deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
+@keyframes bob { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.025); } }
+@keyframes lineIn { from { opacity: 0; transform: translateY(4px); } }
+@media (prefers-reduced-motion: reduce) { .aBub, .z1, .z2, .star, .card, .pic img, .heng, .line { animation: none; } }

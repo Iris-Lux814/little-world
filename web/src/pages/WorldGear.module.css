@@ -1,0 +1,101 @@
+/* 钓具箱（见 WorldGear.tsx）。设计尺寸 780×450，按容器缩放 */
+.wrap { position: absolute; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center; background: rgba(40, 30, 38, .42); animation: dim .3s ease-out; perspective: 1400px; }
+.wrapOut { animation: undim .5s .35s ease-in forwards; }
+@keyframes dim { from { background: rgba(40, 30, 38, 0); } }
+@keyframes undim { to { background: rgba(40, 30, 38, 0); } }
+.fit { position: relative; width: 780px; height: 450px; transform-origin: 50% 50%; }
+.box { position: absolute; inset: 0; }
+.drop .body { animation: drop .55s cubic-bezier(.3, 1.5, .5, 1) backwards; }
+/* 亮鳞罐 / 桶的标签等箱子打开以后再跳出来（原来跟箱子一起从天上掉，试玩反馈水桶莫名其妙出现） */
+.jar, .bucketTag { animation: popIn2 .45s 1.5s cubic-bezier(.3, 1.8, .5, 1) backwards; }
+@keyframes drop { from { transform: translateY(-110vh) rotate(-6deg); } }
+.closing { animation: fallOut .45s .45s cubic-bezier(.6, 0, .9, .4) forwards; }
+@keyframes fallOut { to { transform: translateY(40px) scale(.3); opacity: 0; } }
+
+/* 箱身 */
+.body { position: absolute; left: 190px; top: 226px; width: 400px; z-index: 3; }
+.bodyImg { position: relative; z-index: 2; display: block; width: 100%; pointer-events: none; }
+/* 合着的盖子（CSS 画的木板 + 格子布 + 提手）：开锁时一抖，然后往后掀起来 */
+.lidClosed { position: absolute; left: -4px; right: -4px; top: -14px; height: 44px; z-index: 4; border-radius: 10px 10px 4px 4px; transform-origin: 50% 0;
+  background: linear-gradient(transparent 40%, rgba(242, 182, 200, .55) 40% 60%, transparent 60%), repeating-linear-gradient(90deg, #f3e6cf 0 22px, #ecdcbf 22px 24px); border: 2px solid #c9a27a; box-shadow: 0 3px 0 rgba(150, 110, 80, .3);
+  transition: transform .45s cubic-bezier(.5, 0, .3, 1), opacity .3s .15s; }
+.lidClosed img { position: absolute; left: 50%; top: -30px; width: 96px; transform: translateX(-50%); }
+.unlock .lidClosed { animation: jiggle .28s; }
+@keyframes jiggle { 30% { transform: translateY(-3px) rotate(-1deg); } 70% { transform: translateY(-1px) rotate(1deg); } }
+.open .lidClosed, .closing .lidClosed { transform: rotateX(-110deg) translateY(-20px); opacity: 0; }
+.closing .lidClosed { transform: none; opacity: 1; transition-delay: .25s, .25s; }
+
+/* 箱盖内侧：从箱子后面立起来 */
+.lid { position: absolute; left: 215px; top: 0; width: 350px; z-index: 1; transform-origin: 50% 100%; transform: translateY(150px) scaleY(.15); opacity: 0; transition: transform .6s cubic-bezier(.3, 1.4, .5, 1), opacity .25s; }
+.lid > img { display: block; width: 100%; pointer-events: none; }
+.open .lid { transform: none; opacity: 1; transition-delay: .1s; }
+.closing .lid { transition-duration: .35s; transition-delay: .15s; }
+/* 字写在箱盖画上那张便签里（量过：横 50%～85%、竖 26%～67%，右上角有朵花，所以往左下收一点） */
+.note { position: absolute; left: 53%; top: 31%; width: 94px; height: 90px; transform: rotate(-3deg); line-height: 1.5; color: #7A5C68; overflow: hidden; }
+.note p { margin: 0; display: flex; gap: .5em; white-space: nowrap; overflow: hidden; }
+.note b { flex: none; width: 2.2em; text-align: right; color: #c56a88; font-weight: 700; }
+.note p span { flex: 1; min-width: 0; overflow: hidden; }
+
+/* 两层伸缩托盘：从箱子里一层层往两边斜着升起来 */
+.tray { position: absolute; top: 158px; width: 300px; z-index: 5; transition: transform .6s cubic-bezier(.3, 1.35, .5, 1), opacity .25s; }
+.tray > img { display: block; width: 100%; pointer-events: none; filter: drop-shadow(0 6px 5px rgba(90, 60, 50, .22)); }
+.trayL { left: 0; transform: translate(240px, 100px) scale(.55); opacity: 0; }
+.trayR { left: 480px; transform: translate(-240px, 100px) scale(.55); opacity: 0; }
+.open .trayL { transform: rotate(-5deg); opacity: 1; transition-delay: .38s; }
+.open .trayR { transform: rotate(5deg); opacity: 1; transition-delay: .55s; }
+.closing .trayL, .closing .trayR { transition-duration: .35s; transition-delay: 0s; }
+
+/* 东西：一件件跳进格子；换装备时新的一件重新跳一次 */
+.item { position: absolute; padding: 0; border: none; background: none; cursor: pointer; transform: translate(-50%, -72%); animation: popIn .45s cubic-bezier(.3, 1.8, .5, 1) backwards; }
+.item img { display: block; width: 100%; pointer-events: none; animation: hopIn .45s cubic-bezier(.3, 1.8, .5, 1); filter: drop-shadow(0 2px 1px rgba(90, 60, 50, .25)); }
+@keyframes popIn { from { transform: translate(-50%, -72%) scale(0); } }
+@keyframes hopIn { 0% { transform: translateY(-26px) scale(.6); opacity: 0; } 60% { transform: translateY(3px) scale(1.05); opacity: 1; } }
+.item:active img { transform: scale(.9); }
+.picked img { animation: bounce .7s ease-in-out infinite; }
+@keyframes bounce { 50% { transform: translateY(-5px) rotate(-4deg); } }
+.closing .item { animation: popOut .25s ease-in forwards; }
+@keyframes popOut { to { transform: translate(-50%, -72%) scale(0); } }
+.c3_0, .c3_1, .c3_2 { top: 56%; width: 58px; }
+.c3_0 { left: 24%; } .c3_1 { left: 50%; } .c3_2 { left: 76%; }
+.c5_0, .c5_1, .c5_2, .c5_3, .c5_4 { top: 54%; width: 42px; }
+.c5_0 { left: 15%; } .c5_1 { left: 32.5%; } .c5_2 { left: 50%; } .c5_3 { left: 67.5%; } .c5_4 { left: 85%; }
+.item em { position: absolute; right: -4px; bottom: -2px; font-style: normal; font-size: 10px; font-weight: 700; color: #fff; background: #E6A6B8; border-radius: 8px; padding: 0 5px; }
+.using::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #E895AC; }
+/* 竿：立在地上、斜靠在箱子左边（竿把着地，竿尖搭在箱子左上角、在左托盘下面）——竿不塞箱子里 */
+.rod { left: 150px; top: 452px; width: 168px; z-index: 6; transform: translate(-50%, -100%) rotate(4deg); transform-origin: 20% 100%; animation-name: popRod; }
+.rod img { filter: drop-shadow(3px 3px 2px rgba(60, 40, 30, .3)); }
+@keyframes popRod { from { transform: translate(-50%, -100%) rotate(-30deg); opacity: 0; } }
+.closing .rod { opacity: 0; transition: opacity .2s; }
+.closing .rod { animation: none; opacity: 0; transition: opacity .2s; }
+.bucket { left: 700px; top: 400px; width: 96px; z-index: 3; }
+.bucketTag { position: absolute; left: 700px; top: 408px; transform: translateX(-50%); z-index: 3; font-size: 11px; color: #fff; background: #9FB5E2; border-radius: 9px; padding: 1px 8px; white-space: nowrap; }
+.jar { position: absolute; left: 0; top: 318px; width: 96px; z-index: 3; text-align: center; }
+.jar img { width: 72px; display: block; margin: 0 auto; filter: drop-shadow(0 3px 2px rgba(90, 60, 50, .2)); animation: shine 3s ease-in-out infinite; }
+@keyframes shine { 50% { filter: drop-shadow(0 3px 2px rgba(90, 60, 50, .2)) brightness(1.12); } }
+.jar b { display: inline-block; margin-top: 2px; font-size: 15px; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .45); }
+.jar small { margin-left: 3px; font-size: 10px; color: #fff; text-shadow: 0 1px 2px rgba(0, 0, 0, .45); }
+.x { position: absolute; right: 16px; top: 8px; z-index: 8; width: 34px; height: 34px; border-radius: 50%; border: 1.3px dashed #F2B6C8; background: #fffdf8; color: #7A5C68; font-size: 16px; cursor: pointer; animation: popIn2 .3s 1s backwards; }
+@keyframes popIn2 { from { transform: scale(0); } }
+
+/* 纸胶带抽屉：这一类所有的东西 */
+.tape { position: absolute; left: 30px; right: 30px; bottom: 6px; z-index: 10; padding: 8px 10px 10px; border-radius: 4px;
+  background: repeating-linear-gradient(90deg, rgba(251, 222, 230, .97) 0 14px, rgba(255, 240, 244, .97) 14px 28px); box-shadow: 0 -2px 0 rgba(242, 182, 200, .5), 0 10px 26px rgba(60, 40, 50, .35);
+  clip-path: polygon(0 3%, 1.5% 0, 98.5% 4%, 100% 0, 100% 97%, 98.5% 100%, 1.5% 96%, 0 100%); animation: tapeUp .4s cubic-bezier(.3, 1.4, .5, 1); }
+.tapeOut { animation: tapeDown .23s cubic-bezier(.5, 0, .9, .5) forwards !important; }
+@keyframes tapeDown { to { transform: translateY(115%) rotate(-2deg); opacity: .3; } }
+@keyframes tapeUp { from { transform: translateY(110%) rotate(2deg); } }
+.tapeHead { display: flex; align-items: center; gap: 10px; padding: 0 4px 6px; }
+.tapeHead b { font-size: 15px; color: #c56a88; letter-spacing: .2em; }
+.tapeHead span { flex: 1; font-size: 12px; color: #9B8189; }
+.tapeHead button { border: 1.2px dashed #E6A6B8; background: #fffdf8; color: #c56a88; border-radius: 12px; padding: 3px 10px; font-size: 11.5px; cursor: pointer; }
+.strip { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 4px; scrollbar-width: none; }
+.card { position: relative; flex: none; width: 92px; padding: 6px 4px 5px; border: none; border-radius: 10px; background: #fffdf8; box-shadow: 0 2px 0 rgba(230, 166, 184, .45); cursor: pointer; text-align: center; animation: cardIn .35s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+@keyframes cardIn { from { transform: translateY(18px) scale(.8); opacity: 0; } }
+.card img { display: block; width: 50px; height: 50px; object-fit: contain; margin: 0 auto 2px; }
+.card b { display: block; font-size: 11.5px; color: #7A5C68; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card small { display: block; font-size: 9.5px; color: #A8959D; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cardOn { box-shadow: 0 0 0 2px #8FA6D9, 0 2px 0 rgba(143, 166, 217, .45); }
+.cardOn small { color: #6f86c6; }
+.locked > img:first-child { filter: grayscale(1) brightness(1.15) opacity(.55); }
+.lockI { position: absolute; left: 50%; top: 22px; width: 22px !important; height: auto !important; margin-left: 8px !important; }
+.worm { align-self: center; font-size: 11px; color: #9B8189; padding: 0 8px; white-space: nowrap; }

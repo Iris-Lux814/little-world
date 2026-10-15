@@ -1,0 +1,46 @@
+/* 小世界设置（见 WorldSettings.tsx） */
+.mask { position: absolute; inset: 0; z-index: 30; background: rgba(40, 30, 38, .38); display: flex; align-items: center; justify-content: flex-start; padding-left: 4%; perspective: 1400px; animation: dim .3s ease-out; }
+.maskOut { animation: undim .4s ease-in forwards; }
+@keyframes dim { from { background: rgba(40, 30, 38, 0); } }
+@keyframes undim { to { background: rgba(40, 30, 38, 0); } }
+/* 一页手账从左边翻进来 */
+.page { position: relative; width: min(430px, 88%); max-height: 92%; overflow: auto; padding: 16px 18px 14px; border-radius: 6px 14px 14px 6px;
+  background: #fffdf8 repeating-linear-gradient(transparent 0 27px, #f6e6ec 27px 28px); box-shadow: 0 3px 0 rgba(242, 182, 200, .5), 0 14px 30px rgba(60, 40, 50, .3);
+  transform-origin: 0 50%; animation: pageIn .6s cubic-bezier(.3, 1.2, .4, 1) backwards; scrollbar-width: none; }
+.page::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 14px; background: repeating-linear-gradient(transparent 0 10px, #f2b6c8 10px 13px, transparent 13px 18px); opacity: .7; } /* 装订孔那一侧 */
+.page::after { content: ""; position: absolute; inset: 6px 6px 6px 20px; border: 1.3px dashed #F2B6C8; border-radius: 9px; pointer-events: none; }
+.pageOut { animation: pageOut .42s cubic-bezier(.6, 0, .8, .4) forwards; }
+@keyframes pageIn { from { transform: rotateY(-95deg); opacity: .3; } }
+@keyframes pageOut { to { transform: rotateY(-95deg); opacity: 0; } }
+.tape { position: absolute; left: 28px; top: -7px; width: 64px; height: 18px; background: repeating-linear-gradient(90deg, rgba(247, 198, 212, .92) 0 8px, rgba(251, 222, 230, .92) 8px 16px); transform: rotate(-5deg); z-index: 2; }
+.head { display: flex; align-items: center; gap: 8px; padding-left: 10px; margin-bottom: 4px; }
+.head img { width: 34px; animation: bob 2.6s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-3px) rotate(-4deg); } }
+.head b { flex: 1; font-size: 17px; color: #7A5C68; letter-spacing: .15em; }
+.head button { width: 30px; height: 30px; border-radius: 50%; border: 1.3px dashed #F2B6C8; background: #fff; color: #7A5C68; font-size: 16px; cursor: pointer; }
+.sec { padding: 10px 0 2px 12px; font-size: 13px; font-weight: 700; color: #c56a88; letter-spacing: .2em; }
+.sec small { margin-left: 8px; font-size: 10.5px; font-weight: 400; color: #B8A6AD; letter-spacing: .05em; }
+.row { display: flex; align-items: center; gap: 8px; padding: 5px 4px 5px 12px; animation: rowIn .45s cubic-bezier(.3, 1.4, .5, 1) backwards; }
+@keyframes rowIn { from { transform: translateX(-24px); opacity: 0; } }
+.ico { width: 26px; height: 26px; object-fit: contain; flex: none; }
+.lbl { width: 108px; flex: none; line-height: 1.25; }
+.lbl b { display: block; font-size: 13.5px; color: #7A5C68; }
+.lbl small { display: block; font-size: 9.5px; color: #B8A6AD; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* 缎带滑条：浅粉缎带上缝一道虚线，拖过的地方颜色深一点，蝴蝶结是把手 */
+.ribbon { position: relative; flex: 1; height: 34px; touch-action: none; cursor: pointer; }
+.track, .fill { position: absolute; left: 0; top: 50%; height: 12px; margin-top: -6px; border-radius: 2px; }
+.track { right: 0; background: #fbe3ea; box-shadow: inset 0 0 0 1px #f4c7d4; clip-path: polygon(0 0, 100% 0, 96% 50%, 100% 100%, 0 100%, 4% 50%); }
+.track::after { content: ""; position: absolute; left: 6px; right: 6px; top: 50%; border-top: 1px dashed rgba(255, 255, 255, .95); }
+.fill { width: calc(var(--v) * 100%); background: linear-gradient(#f7a9c0, #ee92ae); clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 4% 50%); transition: width .12s; }
+.knob { position: absolute; top: 50%; left: calc(var(--v) * 100%); width: 30px; margin: -12px 0 0 -15px; pointer-events: none; transition: left .12s; filter: drop-shadow(0 2px 1px rgba(160, 80, 110, .3)); }
+.drag .knob { animation: wiggle .35s ease-in-out infinite; transition: none; }
+.drag .fill { transition: none; }
+@keyframes wiggle { 0%, 100% { transform: rotate(-10deg) scale(1.12); } 50% { transform: rotate(10deg) scale(1.12); } }
+.pct { position: absolute; right: -2px; top: -4px; font-size: 9.5px; color: #c56a88; }
+/* 爱心开关 */
+.heart { margin-left: auto; width: 54px; height: 28px; border-radius: 14px; border: 1.3px dashed #F2B6C8; background: #f6eef1; position: relative; cursor: pointer; transition: background .3s; }
+.heart i { position: absolute; left: 4px; top: 4px; width: 20px; height: 20px; background: url(/fanart/b2-heart.png) center / contain no-repeat; filter: grayscale(1) opacity(.5); transition: transform .35s cubic-bezier(.3, 1.6, .5, 1), filter .3s; }
+.heart.on { background: #fbe3ea; }
+.heart.on i { transform: translateX(25px) scale(1.1); filter: none; }
+.go { margin-left: auto; padding: 4px 12px; border-radius: 14px; border: 1.3px dashed #F2B6C8; background: #fbe3ea; color: #c56a88; font-size: 12px; cursor: pointer; }
+.go:active { transform: scale(.95); }

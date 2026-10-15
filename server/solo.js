@@ -3,6 +3,7 @@
 // 规则全在 engine/ 里；这里只管存档、接口、伙伴的自动玩法、聊天、小人图。
 // 不带：捉迷藏、换装、天象、截图。
 "use strict";
+const WORLD_TZ = process.env.WORLD_TZ || "Etc/GMT-8"; // 游戏按 UTC+8 走（节日、夜河的钟点都按这个时区）
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
@@ -123,6 +124,11 @@ function togetherTick(s, now) {
   if (s.duel && duel.live(s.duel.bet)) { const bb = JSON.stringify(s.duel.bet); for (const e of duel.tick(s, s.events)) { if (e.type === "auto-accept" || e.type === "accept") tell(s, e.bet.with, `接了，${duel.KINDS[e.bet.kind]}，输的：${e.bet.stake}。`); if (e.type === "auto-decline" || e.type === "decline") tell(s, e.bet.with, "这次不赌。"); if (e.type === "settled") sys(s, e.iou ? `欠条 · ${nameOf(e.iou.debtor)}欠${nameOf(e.iou.creditor)}：${e.iou.stake}` : "平局，谁也不欠谁。"); } if (JSON.stringify(s.duel.bet) !== bb) dirty = true; }
   return dirty || before !== JSON.stringify([s.legendRoll, s.legend && s.legend.phase, (s.bets || []).map((b) => b.status)]);
 }
+
+const tzOffsetMin = (t = Date.now()) => {
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: WORLD_TZ, hourCycle: "h23", year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" }).formatToParts(t).map((x) => [x.type, x.value]));
+  return Math.round((Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute) - Math.floor(t / 60000) * 60000) / 60000);
+};
 const cardOpts = () => ({ SPECIES, weatherOf, hour: shHour(), names: Object.fromEntries(ALL.map((w) => [w, nameOf(w)])) });
 function cardsAuto(s, now) {   // 伙伴打鱼桶牌：叫到就接，轮到就出（出最小的那张）
   const g = s.cards && s.cards.cur; if (!g || g.status === "done") return false; let dirty = false;
@@ -195,7 +201,7 @@ function view(s, me) {
   const mySpot = s.players[HOST].spot || "pond"; const weathers = Object.fromEntries(Object.keys(SPN).map((k) => [k, weatherOf(s, k)]));
   const hp = s.players[HOST];
   return { items: hp.items || {}, specials: charmOf(hp) === "watch" ? core.specialsNow(s, mySpot) : null,
-    farm: farmOn(s) ? farm.farmView(s) : null, legend: core.legendView(s), bets: core.betsView(s), open: !!s.open, trial, now: Date.now(), hour: shHour(), weather: weathers[mySpot], weathers, spots: Object.entries(SPN).map(([id, name]) => ({ id, name })), players: Object.values(s.players).map(pub), dex, events: s.events.slice(-40), me, ai, roles: { host: HOST, companions: AIS } };
+    farm: farmOn(s) ? farm.farmView(s) : null, legend: core.legendView(s), bets: core.betsView(s), open: !!s.open, trial, now: Date.now(), hour: shHour(), tzOffsetMin: tzOffsetMin(), weather: weathers[mySpot], weathers, spots: Object.entries(SPN).map(([id, name]) => ({ id, name })), players: Object.values(s.players).map(pub), dex, events: s.events.slice(-40), me, ai, roles: { host: HOST, companions: AIS } };
 }
 
 // ── 接口 ──

@@ -1,0 +1,183 @@
+/* 斗地主牌桌（见 WorldDdz.tsx）。底图 1672×941，牌桌宽 = 100cqw，底图 x px ÷ 16.72 = cqw */
+.mask { position: absolute; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #3b2a22; animation: dim .3s ease-out; }
+@keyframes dim { from { opacity: 0; } }
+.table { position: relative; width: min(100%, calc(100dvh * 1672 / 941)); aspect-ratio: 1672 / 941; container-type: inline-size; animation: pop .45s cubic-bezier(.3, 1.3, .5, 1) backwards; user-select: none; -webkit-user-select: none; touch-action: none; }
+@keyframes pop { from { transform: scale(.9); opacity: 0; } }
+.bg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+/* 加宽底图：原图在它里面 x=272、y=-2（2228×955） */
+.wide { position: absolute; left: -16.27cqw; top: .12cqw; width: 133.25cqw; max-width: none; height: auto; pointer-events: none; }
+/* 炸弹：整张桌子往上一跳再落下 */
+.boom { animation: boom .6s ease-out; }
+@keyframes boom { 20% { transform: translateY(-1.4cqw) rotate(-.4deg); } 40% { transform: translateY(.4cqw) rotate(.3deg); } 60% { transform: translateY(-.5cqw); } 80% { transform: translateY(.15cqw); } }
+.close { position: absolute; right: 1.4cqw; top: 1.4cqw; width: 4cqw; height: 4cqw; border-radius: 50%; background: #fffaf3; box-shadow: 0 0 0 .25cqw #f2b6c8, 0 .3cqw 0 rgba(200, 120, 150, .3); z-index: 6; }
+.close::before, .close::after { content: ""; position: absolute; left: 50%; top: 50%; width: 2cqw; height: .4cqw; border-radius: .2cqw; background: #d9658d; transform: translate(-50%, -50%) rotate(45deg); }
+.close::after { transform: translate(-50%, -50%) rotate(-45deg); }
+/* 小黑板上的粉笔字 */
+.board { position: absolute; left: 14.1cqw; top: 7.7cqw; transform: translate(-50%, -50%); white-space: nowrap; text-align: center; color: #f6f1e6; font-weight: 700; font-size: 1.75cqw; letter-spacing: .05em; text-shadow: 0 0 .3cqw rgba(255, 255, 255, .35); opacity: .92; }
+
+/* ── 两把椅子上的人 ── */
+.seat { position: absolute; top: 0; width: 0; height: 0; z-index: 2; }
+/* 坐姿图屁股对到椅面；轮到他换成托腮那帧、轻轻晃 */
+.sitWrap { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+.sitter { position: absolute; display: block; background-repeat: no-repeat; background-position: 0 0; image-rendering: pixelated; will-change: transform; transform: translateZ(0); /* 试玩反馈伙伴有重影、好几层：iPhone Safari 上 drop-shadow 滤镜 + 动画会留残影 → 去掉滤镜、单独一层合成 */ transform-origin: 50% 75%; animation: sitIn .5s cubic-bezier(.3, 1.5, .5, 1) backwards; }
+@keyframes sitIn { from { transform: translateY(4cqw); } }
+.sitTurn { animation: sitIn .5s cubic-bezier(.3, 1.5, .5, 1) backwards, rock 1.4s ease-in-out infinite; }
+@keyframes rock { 50% { transform: rotate(2.5deg); } }
+/* 敲两下桌子 = 不要 */
+.knock { animation: knock .4s ease-in-out; }
+@keyframes knock { 25%, 75% { transform: translateY(.5cqw); } 50%, 100% { transform: none; } }
+.knockFx { position: absolute; left: 0; top: 27cqw; width: 0; height: 0; }
+.knockFx i { position: absolute; width: 3cqw; height: 1.4cqw; border: .3cqw solid #fff7e8; border-color: #fff7e8 transparent transparent; border-radius: 50%; transform: translate(-50%, -50%); animation: ring .5s ease-out forwards; opacity: 0; }
+.knockFx i:nth-child(2) { animation-delay: .16s; }
+@keyframes ring { from { opacity: 1; transform: translate(-50%, -50%) scale(.4); } to { opacity: 0; transform: translate(-50%, -50%) scale(1.6); } }
+.crown { position: absolute; left: 0; top: 16.6cqw; width: 5.4cqw; aspect-ratio: 417 / 258; transform: translateX(-50%) rotate(-6deg); background: url(/world-ddz/crown.png) center / contain no-repeat; z-index: 3; animation: crownOn .6s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+@keyframes crownOn { from { transform: translate(-50%, -6cqw) rotate(-30deg); opacity: 0; } }
+.glass { position: absolute; left: 4.6cqw; top: 18cqw; width: 2.4cqw; aspect-ratio: 250 / 390; background: url(/world-ddz/hourglass.png) center / contain no-repeat; animation: flipG 1.8s ease-in-out infinite; }
+@keyframes flipG { 0%, 70% { transform: rotate(0); } 90%, 100% { transform: rotate(180deg); } }
+.nameTag { position: absolute; left: 0; top: 10.6cqw; transform: translateX(-50%); font-size: 1.5cqw; font-weight: 700; color: #8a5a4a; background: #fff8ec; padding: .15cqw 1cqw; border-radius: 1cqw; box-shadow: 0 0 0 .15cqw #e8cba5, 0 .2cqw 0 rgba(150, 100, 70, .2); white-space: nowrap; }
+.said { position: absolute; left: 6.6cqw; top: 19cqw; white-space: nowrap; font-size: 1.7cqw; font-weight: 700; color: #a2604f; background: #fff; padding: .4cqw 1.2cqw; border-radius: 1.2cqw 1.2cqw 1.2cqw .2cqw; box-shadow: 0 .3cqw .8cqw rgba(120, 80, 60, .2); animation: bubble .3s cubic-bezier(.3, 1.6, .5, 1); z-index: 4; }
+.saidR { left: auto; right: 6.6cqw; border-radius: 1.2cqw 1.2cqw .2cqw 1.2cqw; }
+@keyframes bubble { from { transform: scale(.4); opacity: 0; } }
+.addRow { position: absolute; left: 0; top: 14.5cqw; transform: translateX(-50%); display: flex; flex-direction: column; gap: .7cqw; }
+.addRow button { font-size: 1.5cqw; padding: .55cqw 1.6cqw; border-radius: 2cqw; background: #fff8ec; color: #c25b80; font-weight: 700; white-space: nowrap; box-shadow: 0 0 0 .2cqw #f2b6c8, 0 .3cqw 0 rgba(200, 120, 150, .3); }
+.addRow button:active { transform: scale(.95); }
+.addRow.standRow { top: 6.6cqw; z-index: 3; }
+.addRow .standBtn { color: #8a5a4a; box-shadow: 0 0 0 .2cqw #e8cba5, 0 .3cqw 0 rgba(150, 100, 70, .25); font-size: 1.3cqw; padding: .4cqw 1.3cqw; }
+/* 剩余牌数的小木牌（底图上是空木牌） */
+.plate { position: absolute; top: 29.1cqw; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; line-height: 1.05; color: #7a4a32; font-weight: 800; z-index: 2; }
+.plate span { font-size: 1.4cqw; } .plate b { font-size: 2.6cqw; color: #8a3f2c; }
+.plate span:last-child { margin-top: -.1cqw; }
+
+.fg { position: absolute; left: 0; top: 22.73cqw; width: 100cqw; pointer-events: none; z-index: 2; }
+
+/* ── 横横 ── */
+.hengWrap { position: absolute; left: 50cqw; top: 7cqw; width: 15.4cqw; height: 19.5cqw; transform: translateX(-50%); z-index: 2; pointer-events: none; }
+.heng { display: block; width: 100%; height: 100%; background-repeat: no-repeat; image-rendering: pixelated; }
+/* 发牌：dealBox 的原点 = 横横头顶（牌叠底部）；横横身子 / 牌叠 / 飞出去的牌都相对它放 */
+.dealBox { position: absolute; left: 50cqw; top: 20.36cqw; width: 0; height: 0; z-index: 4; pointer-events: none; }
+.dealer { position: absolute; left: 0; top: -13.36cqw; width: 15.4cqw; height: 19.5cqw; transition: transform .35s cubic-bezier(.4, 0, .4, 1); }
+.crouch .heng { transform: scaleY(.88); transform-origin: 50% 96%; }
+/* 头顶那叠牌：粉色牌背一层层的边，发一张矮一截 */
+.stack { position: absolute; left: 50%; top: 13.36cqw; width: 4.98cqw; background: url(/world-ddz/stack_mid.png) center bottom / 100% .473cqw repeat-y; image-rendering: pixelated; }
+.stack::before { content: ""; position: absolute; left: 0; right: 0; top: -1.77cqw; height: 1.77cqw; background: url(/world-ddz/stack_top.png) center / 100% 100% no-repeat; image-rendering: pixelated; }
+/* 飞出去的一张：外层横着走（匀速），里层上抛再落下 + 翻跟头 */
+.fly { position: absolute; left: 0; top: -1cqw; width: 0; height: 0; animation: flyX linear forwards; }
+@keyframes flyX { from { transform: translateX(var(--from)); } to { transform: translateX(var(--dx)); } }
+.flyCard2 { position: absolute; left: -1.6cqw; top: -2.2cqw; width: 3.2cqw; aspect-ratio: 239 / 319; background: url(/world-ddz/back.png) center / contain no-repeat; animation: flyY forwards; }
+@keyframes flyY { 0% { transform: translateY(0) rotate(0) scale(.9); opacity: 1; animation-timing-function: cubic-bezier(.2, .7, .4, 1); } 35% { transform: translateY(-5cqw) rotate(260deg) scale(1); animation-timing-function: cubic-bezier(.5, 0, .9, .6); } 92% { opacity: 1; } 100% { transform: translateY(var(--dy)) rotate(720deg) scale(1.05); opacity: 0; } }
+/* 弹歪的那张：落在横横右边的桌面上躺着 */
+.strayLie { left: 6.6cqw; top: 4.2cqw; animation: strayIn .45s cubic-bezier(.3, 1.3, .5, 1) forwards; }
+@keyframes strayIn { from { transform: translate(-6.6cqw, -8cqw) rotate(-300deg); } to { transform: rotate(78deg); } }
+/* 底牌：横横面前一排三张 */
+.bottomCards { position: absolute; left: 63.5cqw; top: 24.6cqw; transform: translate(-50%, -50%); display: flex; gap: .4cqw; z-index: 3; }
+.bottomCards .card { animation: flipIn .5s cubic-bezier(.3, 1.4, .5, 1) backwards; }
+@keyframes flipIn { from { transform: rotateY(90deg) translateY(-2cqw); } }
+.back { width: 3.6cqw; filter: drop-shadow(0 .2cqw .2cqw rgba(120, 60, 60, .25)); }
+
+/* ── 桌子中间 ── */
+.center { position: absolute; left: 50cqw; top: 37cqw; width: 50cqw; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .8cqw; z-index: 3; }
+.lastPlay { display: flex; flex-direction: column; align-items: center; gap: .6cqw; }
+.lastCards { display: flex; }
+.lastCards .card b { font-size: 1.7cqw; } .lastCards .card .pip { width: 2.5cqw; height: 2.5cqw; bottom: .9cqw; }
+.lastCards .card { width: 4.6cqw; height: 7.9cqw; margin: 0 -.9cqw; animation: .42s cubic-bezier(.3, 1.3, .5, 1) backwards; animation-delay: calc(var(--i) * 40ms); }
+.from_me .card { animation-name: fromMe; } .from_l .card { animation-name: fromL; } .from_r .card { animation-name: fromR; }
+@keyframes fromMe { from { transform: translateY(18cqw) scale(1.25) rotate(-8deg); opacity: 0; } }
+@keyframes fromL { from { transform: translate(-24cqw, -12cqw) scale(.7) rotate(-30deg); opacity: 0; } }
+@keyframes fromR { from { transform: translate(24cqw, -12cqw) scale(.7) rotate(30deg); opacity: 0; } }
+/* 顺子 / 连对：像多米诺骨牌一张推一张倒下来 */
+.domino .card { animation-name: domino !important; transform-origin: 50% 100%; animation-duration: .3s; animation-delay: calc(var(--i) * 70ms); }
+@keyframes domino { from { transform: rotate(-80deg); opacity: 0; } 60% { opacity: 1; } }
+/* 飞机：一架纸飞机滑进来 */
+.plane .card { animation-name: glide !important; animation-duration: .7s; animation-delay: calc(var(--i) * 30ms); }
+@keyframes glide { from { transform: translate(-40cqw, -10cqw) rotate(-20deg) scale(.6); opacity: 0; } 70% { transform: translate(1cqw, .5cqw) rotate(2deg); opacity: 1; } }
+.staleTrick { opacity: .55; filter: saturate(.6); transform: scale(.86); animation: staleIn .6s ease-out; }
+@keyframes staleIn { from { opacity: 1; filter: none; transform: scale(1); } }
+.lastTag { font-size: 1.4cqw; color: #8a5a4a; background: rgba(255, 248, 236, .92); padding: .1cqw 1cqw; border-radius: 1cqw; }
+.idle { display: flex; }
+.hintTxt { font-size: 1.9cqw; color: #8a5a4a; font-weight: 700; background: rgba(255, 248, 236, .92); padding: .8cqw 2cqw; border-radius: 2cqw; box-shadow: 0 0 0 .2cqw #f2b6c8; }
+.big { font-size: 2.6cqw; font-weight: 800; color: #fff; background: #e88aa8; padding: 1cqw 4cqw; border-radius: 3cqw; box-shadow: 0 0 0 .3cqw #fff3f6, 0 .5cqw 0 rgba(180, 70, 110, .35); animation: bob 1.6s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-.5cqw); } }
+.result { position: relative; display: flex; flex-direction: column; align-items: center; gap: .4cqw; padding: 1.4cqw 3cqw; background: #fffaf3; border-radius: 2cqw; box-shadow: 0 0 0 .3cqw #f2b6c8, 0 1cqw 2cqw rgba(120, 80, 60, .25); animation: bubble .5s cubic-bezier(.3, 1.6, .5, 1); }
+.result b { font-size: 2.6cqw; color: #c25b80; } .result span { font-size: 1.6cqw; color: #8a5a4a; }
+.confetti { position: absolute; inset: -6cqw; pointer-events: none; background: radial-gradient(circle, #ffb3cf .5cqw, transparent .6cqw) 0 0 / 7cqw 7cqw, radial-gradient(circle, #ffe07a .4cqw, transparent .5cqw) 3cqw 2cqw / 8cqw 6cqw, radial-gradient(circle, #9fd8ff .4cqw, transparent .5cqw) 5cqw 4cqw / 6cqw 9cqw; animation: rain 1.8s ease-out forwards; }
+@keyframes rain { from { transform: translateY(-8cqw); opacity: 1; } to { transform: translateY(6cqw); opacity: 0; } }
+/* 王炸：满桌飘花瓣 */
+.petals { position: absolute; inset: 0; pointer-events: none; z-index: 6; }
+.petals i { position: absolute; left: calc(var(--i) * 7.2cqw + 2cqw); top: -3cqw; width: 2cqw; height: 2cqw; background: url(/world-ddz/pip_flower.png) center / contain no-repeat; animation: petal 1.9s ease-in forwards; animation-delay: calc(var(--i) * 50ms); }
+@keyframes petal { to { transform: translate(calc((var(--i) - 7) * .6cqw), 60cqw) rotate(540deg); opacity: 0; } }
+/* 输了：一张小纸条飘到手牌上 */
+.note { position: absolute; left: 12cqw; bottom: 14cqw; width: 6cqw; aspect-ratio: 361 / 262; background: url(/world-ddz/note.png) center / contain no-repeat; z-index: 5; animation: noteIn 1.4s cubic-bezier(.3, 1.2, .5, 1) backwards .4s; }
+@keyframes noteIn { from { transform: translate(30cqw, -30cqw) rotate(-160deg); opacity: 0; } 70% { transform: translate(0, -1cqw) rotate(8deg); opacity: 1; } }
+
+/* ── 牌（照效果图：奶白牌面、细粉边、左上深红点数、中下一颗大花色）── */
+.card { position: relative; flex: none; width: 5.6cqw; height: 9.6cqw; border-radius: .6cqw; background: #fffdf8; box-shadow: 0 0 0 .18cqw #e9b9c4, inset 0 0 0 .35cqw #fff, inset 0 0 0 .45cqw #f6dfe3, 0 .3cqw .5cqw rgba(140, 90, 80, .25); display: block; transition: transform .14s cubic-bezier(.3, 1.5, .5, 1); }
+.card b { position: absolute; left: .55cqw; top: .45cqw; font-size: 2cqw; line-height: 1; font-weight: 800; color: #a3283f; font-family: "Georgia", serif; }
+.pip { position: absolute; left: 50%; bottom: 1.1cqw; width: 3cqw; height: 3cqw; transform: translateX(-50%); background: center / contain no-repeat; image-rendering: pixelated; }
+.s_berry .pip { background-image: url(/world-ddz/pip_berry.png); }
+.s_flower .pip { background-image: url(/world-ddz/pip_flower.png); } .s_flower b { color: #c4547c; }
+.s_clover .pip { background-image: url(/world-ddz/pip_clover.png); } .s_clover b { color: #3f7a4c; }
+.s_star .pip { background-image: url(/world-ddz/pip_star.png); } .s_star b { color: #c08414; }
+.smallJ b, .bigJ b { writing-mode: vertical-rl; font-size: 1.5cqw; letter-spacing: .1em; }
+.smallJ b { color: #6a6a9a; } .bigJ b { color: #d9658d; }
+.smallJ .pip, .bigJ .pip { width: 3.6cqw; height: 3.6cqw; left: 58%; background-image: url(/world-ddz/pip_joker.png); }
+.smallJ .pip { filter: grayscale(.75) brightness(1.05); }
+.small { width: 3.6cqw; height: 6.1cqw; } .small b { font-size: 1.35cqw; left: .4cqw; top: .35cqw; } .small .pip { width: 2cqw; height: 2cqw; bottom: .6cqw; }
+.small.smallJ b, .small.bigJ b { font-size: 1cqw; }
+.dim { filter: brightness(.85); }
+/* 人物牌：牌心一张小插画，花色缩到左上角点数下面 */
+.face { position: absolute; left: 50%; bottom: .5cqw; width: 88%; aspect-ratio: 1; transform: translateX(-50%); background: center bottom / contain no-repeat; image-rendering: pixelated; }
+.hasFace .pip { left: .55cqw; bottom: auto; top: 2.5cqw; width: 1.5cqw; height: 1.5cqw; transform: none; }
+.small.hasFace .pip { top: 1.7cqw; left: .4cqw; width: 1cqw; height: 1cqw; }
+.lastCards .hasFace .pip { top: 2.1cqw; width: 1.3cqw; height: 1.3cqw; }
+.hasFace.smallJ b, .hasFace.bigJ b { z-index: 1; }
+.hand { position: absolute; left: 2cqw; right: 2cqw; bottom: 1.4cqw; height: 13cqw; display: flex; justify-content: center; align-items: flex-end; z-index: 4; }
+.hand .card { margin: 0 calc(-1 * max(0cqw, min(1.6cqw, (5.6cqw * var(--n) - 94cqw) / var(--n) / 2 + .1cqw))); transform: translateY(calc(abs(var(--i) - (var(--n) - 1) / 2) * .1cqw)); animation: deal .4s cubic-bezier(.3, 1.3, .5, 1) backwards; cursor: pointer; }
+@keyframes deal { from { transform: translate(0, -30cqw) rotate(30deg) scale(.6); opacity: 0; } }
+.hand .card.up { transform: translateY(-2.2cqw); box-shadow: 0 0 0 .3cqw #ef8fb0, inset 0 0 0 .35cqw #fff, 0 .6cqw 1cqw rgba(200, 90, 130, .35); }
+.handShake { animation: shk .4s ease; }
+@keyframes shk { 25% { transform: translateX(-1cqw); } 50% { transform: translateX(1cqw); } 75% { transform: translateX(-.5cqw); } }
+.mine { position: absolute; left: 7cqw; bottom: 14.6cqw; width: 0; height: 0; z-index: 5; }
+.mine .nameTag { top: 0; }
+.mine .crown { top: -3.6cqw; }
+.mine .said { left: 4cqw; top: -.6cqw; }
+.mineTurn .nameTag { animation: glow 1.2s ease-in-out infinite; }
+@keyframes glow { 50% { box-shadow: 0 0 0 .15cqw #e8cba5, 0 0 0 .7cqw rgba(255, 190, 210, .6); } }
+
+/* ── 按钮（照效果图：圆胶囊，出牌粉、不要奶白、提示浅蓝）── */
+.btns { position: absolute; right: 2cqw; top: 38.9cqw; transform: translateY(-50%); display: flex; gap: 1cqw; z-index: 5; }
+.btns button { min-width: 10cqw; padding: .9cqw 1.8cqw; border-radius: 3cqw; font-size: 2.1cqw; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: .6cqw; line-height: 1.1; position: relative; transition: transform .12s; animation: bubble .3s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+.btns button:nth-child(2) { animation-delay: 50ms; } .btns button:nth-child(3) { animation-delay: 100ms; } .btns button:nth-child(4) { animation-delay: 150ms; }
+.btns button:active { transform: scale(.94); } .btns button:disabled { opacity: .5; }
+.btns em { position: absolute; left: 50%; bottom: -2.2cqw; transform: translateX(-50%); font-style: normal; font-size: 1.3cqw; font-weight: 700; white-space: nowrap; color: #c25b80; background: #fff8ec; padding: 0 .8cqw; border-radius: 1cqw; }
+.bPlay { color: #c2445e; background: #ffe4ec; box-shadow: 0 0 0 .3cqw #f08fae, inset 0 0 0 .3cqw #fff, 0 .5cqw 0 rgba(200, 90, 130, .35); }
+.bPass { color: #b23c4c; background: #fffaf3; box-shadow: 0 0 0 .3cqw #f2b6c8, inset 0 0 0 .3cqw #fff, 0 .5cqw 0 rgba(200, 120, 150, .25); }
+.bHint { color: #2f6fb8; background: #e6f2ff; box-shadow: 0 0 0 .3cqw #8fc0ef, inset 0 0 0 .3cqw #fff, 0 .5cqw 0 rgba(110, 160, 220, .3); }
+.icoHeart { width: 2.2cqw; height: 2cqw; flex: none; background: #f06a92; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 18'%3E%3Cpath d='M10 17 L2 9 A4.6 4.6 0 0 1 10 2.6 A4.6 4.6 0 0 1 18 9 Z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 18'%3E%3Cpath d='M10 17 L2 9 A4.6 4.6 0 0 1 10 2.6 A4.6 4.6 0 0 1 18 9 Z'/%3E%3C/svg%3E") center / contain no-repeat; }
+.icoX { position: relative; width: 1.8cqw; height: 1.8cqw; flex: none; }
+.icoX::before, .icoX::after { content: ""; position: absolute; left: 50%; top: 50%; width: 2cqw; height: .5cqw; border-radius: .25cqw; background: #e0465e; transform: translate(-50%, -50%) rotate(45deg); }
+.icoX::after { transform: translate(-50%, -50%) rotate(-45deg); }
+.icoStar { width: 2.2cqw; height: 2.2cqw; flex: none; background: url(/world-ddz/pip_star.png) center / contain no-repeat; }
+.err { position: absolute; left: 50%; top: 4cqw; transform: translateX(-50%); padding: .8cqw 2cqw; border-radius: 2cqw; background: #fff; color: #c25b80; font-size: 1.7cqw; box-shadow: 0 .4cqw 1cqw rgba(0, 0, 0, .15); z-index: 7; }
+@media (prefers-reduced-motion: reduce) { .sitTurn, .glass, .big, .mineTurn .nameTag { animation: none; } }
+
+/* 「我们仨」群聊：他们说话头顶冒泡；左下角一张奶白小纸条（最近三句），点开变大能往上翻、能说一句 */
+.headSay { position: absolute; left: 50%; transform: translateX(-30%); width: max-content; max-width: 24cqw; padding: .6cqw 1.2cqw; border-radius: 1.4cqw 1.4cqw 1.4cqw .3cqw; background: #fffaf5; box-shadow: 0 0 0 .2cqw #f2b6c8, 0 .4cqw .8cqw rgba(90, 50, 40, .25); font-size: 1.6cqw; line-height: 1.35; color: #8a4f5e; white-space: normal; word-break: break-all; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; z-index: 7; animation: headSayIn .4s cubic-bezier(.3, 1.6, .5, 1); pointer-events: none; }
+.headSayR { transform: translateX(-70%); border-radius: 1.4cqw 1.4cqw .3cqw 1.4cqw; }
+@keyframes headSayIn { from { opacity: 0; scale: .5; } }
+.chatNote { position: absolute; left: 1.6cqw; top: 32.6cqw; width: 17cqw; padding: .7cqw 1cqw .8cqw; border-radius: .8cqw; background: #fffaf3; box-shadow: 0 0 0 .2cqw #ecd2bf, 0 .5cqw 1cqw rgba(70, 40, 30, .3); transform: rotate(-2deg); z-index: 8; cursor: pointer; transition: width .3s, transform .3s; }
+.chatNote::before { content: ""; position: absolute; left: 50%; top: -.7cqw; width: 4cqw; height: 1.3cqw; transform: translateX(-50%) rotate(3deg); background: rgba(246, 182, 201, .75); border-radius: .3cqw; } /* 粉色胶带 */
+.chatOpen { width: 34cqw; top: 7cqw; transform: rotate(0); cursor: default; z-index: 12; }
+.chatPing { animation: chatPing .7s ease-out; }
+@keyframes chatPing { 30% { transform: rotate(-2deg) translateY(-1cqw); } 60% { transform: rotate(-2deg) translateY(.2cqw); } }
+.chatHead { display: block; font-size: 1.3cqw; color: #c45b7f; letter-spacing: .2em; margin-bottom: .2cqw; }
+.chatList { overflow: hidden; }
+.chatNote:not(.chatOpen) .chatList p { -webkit-line-clamp: 1; }
+.chatOpen .chatList { max-height: 26cqw; overflow-y: auto; }
+.chatList p { margin: .15cqw 0; font-size: 1.35cqw; line-height: 1.4; color: #6b4a44; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.chatOpen .chatList p { -webkit-line-clamp: unset; display: block; }
+.chatList em { font-style: normal; font-weight: 700; margin-right: .6cqw; color: #a2604f; }
+.cw_buddy em { color: #5c7cb4; } .cw_pal em { color: #6a6a7a; } .cw_player em { color: #d9658d; }
+.chatEmpty { color: #b8a09a !important; }
+.chatSay { display: block; margin: .8cqw auto 0; padding: .5cqw 2cqw; border: 0; border-radius: 2cqw; background: #e9789a; color: #fff; font-family: inherit; font-size: 1.5cqw; font-weight: 700; }
+.chatSay:active { transform: scale(.94); }
+.chatMask { position: absolute; inset: -20cqw; z-index: 11; }

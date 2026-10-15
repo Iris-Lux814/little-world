@@ -1,0 +1,79 @@
+/* 树洞小屋：伞沿风铃（门口留言，从上面垂下来，不挡左下摇杆）+ 旧木箱（摆设 / 鱼拓） */
+.mask { position: absolute; inset: 0; z-index: 22; display: flex; align-items: flex-start; justify-content: center; padding-top: max(14px, env(safe-area-inset-top)); background: rgba(74, 64, 69, .24); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); animation: fade .25s ease-out backwards; }
+.maskLow { align-items: center; padding-top: 0; }
+.out { animation: fadeOut .3s ease-in forwards; }
+.out .chime { animation: rollUp .3s ease-in forwards; }
+.out .chest { animation: sink .3s ease-in forwards; }
+@keyframes fade { from { opacity: 0; } }
+@keyframes fadeOut { to { opacity: 0; } }
+.ttl { display: block; text-align: center; font-size: 15px; letter-spacing: .2em; color: #8A5A6A; margin: 4px 0 6px; }
+.x { position: absolute; right: 12px; top: 12px; width: 30px; height: 30px; border-radius: 50%; border: 1.3px dashed #E5B7C6; background: #FFFBF7; color: #9A6A7A; font-size: 17px; z-index: 2; }
+.empty { text-align: center; padding: 16px 0 10px; font-size: 13px; line-height: 1.75; color: #B08A98; width: 100%; }
+
+/* 伞沿风铃：整块从顶上「放」下来（先卷着，再展开），伞沿是一排粉色扇贝边 */
+.chime { position: relative; width: min(440px, calc(100% - 32px)); max-height: 82%; overflow: auto; padding: 30px 14px 16px; border-radius: 0 0 26px 26px;
+  background: linear-gradient(#FFF7F9, #FFF1F4 70%, #FDEBF0); box-shadow: 0 14px 30px rgba(90, 50, 70, .25); animation: unroll .55s cubic-bezier(.3, 1.4, .5, 1) backwards; transform-origin: 50% 0; }
+@keyframes unroll { from { transform: scaleY(.15); opacity: 0; } 60% { transform: scaleY(1.04); } }
+@keyframes rollUp { to { transform: scaleY(.1); opacity: 0; } }
+.rim { position: absolute; left: 0; right: 0; top: 0; height: 22px; background: radial-gradient(circle at 50% 0, #F59AB8 11px, transparent 12px) 0 0 / 24px 22px repeat-x, linear-gradient(#F7A8C2, #F7A8C2) 0 0 / 100% 8px no-repeat; }
+.hook { position: absolute; left: 50%; top: -2px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; border: 3px solid #C98AA2; border-bottom-color: transparent; }
+.tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px; min-height: 120px; }
+.tag { position: relative; width: 78px; padding-top: calc(var(--len) + 12px); border: 0; background: none; transform-origin: 50% 0; animation: drop .6s cubic-bezier(.3, 1.6, .5, 1) backwards, sway 3.2s ease-in-out infinite; animation-delay: calc(var(--i) * .07s), calc(var(--i) * -.37s); }
+@keyframes drop { from { transform: translateY(-60px) rotate(8deg); opacity: 0; } }
+@keyframes sway { 50% { transform: rotate(3deg); } }
+.tag:active { animation-play-state: paused; }
+.bell { position: absolute; left: 50%; top: 0; width: 12px; height: 11px; margin-left: -6px; border-radius: 6px 6px 3px 3px; background: linear-gradient(#FFE08A, #E9B64E); box-shadow: 0 1px 0 #C9923A; }
+.tagOpen .bell { animation: ding .5s ease-out; }
+@keyframes ding { 25% { transform: rotate(-24deg); } 60% { transform: rotate(18deg); } }
+.str { position: absolute; left: 50%; top: 11px; width: 1px; height: calc(var(--len) + 1px); background: #C8A47E; }
+.card { position: relative; display: block; height: 62px; perspective: 400px; }
+.front, .back { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; border-radius: 6px 6px 12px 12px; background: var(--c); border: 1.2px solid rgba(200, 150, 160, .5); box-shadow: 0 3px 6px rgba(120, 80, 90, .18); backface-visibility: hidden; transition: transform .5s cubic-bezier(.3, 1.4, .5, 1); font-size: 12px; color: #7A5462; line-height: 1.35; }
+.front::before { content: ""; position: absolute; top: 5px; left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: #fff; border: 1px solid #D9B0BE; }
+.back { transform: rotateY(180deg); }
+.back em { font-style: normal; font-size: 11px; overflow: hidden; }
+.back small { font-size: 9px; color: #B08A98; margin-top: 2px; }
+.tagOpen { width: 150px; z-index: 1; }
+.tagOpen .card { height: 86px; }
+.tagOpen .front { transform: rotateY(-180deg); }
+.tagOpen .back { transform: rotateY(0); }
+.add { display: block; margin: 12px auto 0; padding: 8px 22px; border-radius: 999px; border: 1.5px dashed #F2A5BE; background: #fff; color: #D66F93; font-size: 14px; letter-spacing: .1em; animation: bob 2.2s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-3px); } }
+.pen { margin: 12px auto 0; width: 86%; padding: 12px 12px 8px; border-radius: 6px 6px 16px 16px; background: #FFF6EC; border: 1.3px solid #EBC9B3; box-shadow: 0 4px 10px rgba(120, 80, 90, .15); animation: floatUp .45s cubic-bezier(.3, 1.5, .5, 1) backwards; }
+@keyframes floatUp { from { transform: translateY(40px) rotate(-4deg); opacity: 0; } }
+.pen textarea { width: 100%; height: 58px; resize: none; border: 0; outline: 0; background: repeating-linear-gradient(transparent 0 19px, #F2DCCB 19px 20px); font: inherit; font-size: 14px; line-height: 20px; color: #6E4C58; }
+.penRow { display: flex; align-items: center; gap: 8px; }
+.penRow small { flex: 1; font-size: 11px; color: #C0A0A8; }
+.penRow button { padding: 5px 12px; border-radius: 999px; border: 1.2px solid #E8C6D2; background: #fff; color: #9A6A7A; font-size: 13px; }
+.penRow .hang { background: #F59AB8; border-color: #F59AB8; color: #fff; }
+.penRow .hang:disabled { opacity: .5; }
+.penFly { animation: flyUp .65s cubic-bezier(.5, -0.3, .7, .3) forwards; }
+@keyframes flyUp { 40% { transform: translateY(12px) rotate(-3deg); } to { transform: translateY(-260px) scale(.3) rotate(10deg); opacity: 0; } }
+
+/* 旧木箱：箱盖（深木色一条）往后掀，摆设从箱子里一个个蹦出来 */
+.chest { position: relative; width: min(420px, calc(100% - 32px)); max-height: 80%; overflow: auto; padding: 34px 14px 16px; border-radius: 16px 16px 22px 22px;
+  background: linear-gradient(#FBF1E4, #F4E2CC); border: 3px solid #A8784E; box-shadow: inset 0 0 0 3px #E8C99E, 0 16px 30px rgba(60, 40, 30, .3); animation: rise .5s cubic-bezier(.3, 1.4, .5, 1) backwards; }
+@keyframes rise { from { transform: translateY(40px) scale(.9); opacity: 0; } }
+@keyframes sink { to { transform: translateY(40px) scale(.9); opacity: 0; } }
+.lid { position: absolute; left: -3px; right: -3px; top: -3px; height: 26px; border-radius: 16px 16px 4px 4px; background: repeating-linear-gradient(90deg, #8E6240 0 18px, #9C6D48 18px 36px); border-bottom: 3px solid #C9A25B; transform-origin: 50% 0; animation: lidOpen .7s .1s cubic-bezier(.3, 1.4, .5, 1) backwards; }
+@keyframes lidOpen { from { transform: rotateX(0) translateY(40px); } 50% { transform: rotateX(70deg) translateY(-6px); } }
+.items { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; border-radius: 14px; border: 1.3px dashed #DDBB98; background: rgba(255, 252, 246, .9); color: #7A5440; animation: hop .5s cubic-bezier(.3, 1.8, .5, 1) backwards; animation-delay: calc(.35s + var(--i) * .08s); }
+@keyframes hop { from { transform: translateY(36px) scale(.6); opacity: 0; } }
+.item img { width: 54px; height: 54px; object-fit: contain; transition: transform .25s cubic-bezier(.3, 1.8, .5, 1); }
+.item b { font-size: 12px; }
+.item small { font-size: 10px; color: #B08E72; }
+.itemOn { border-style: solid; border-color: #F59AB8; background: #FFF0F5; }
+.itemOn img { transform: translateY(-4px) rotate(-6deg) scale(1.1); }
+.slots { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding: 10px; border-radius: 14px; background: rgba(255, 255, 255, .6); }
+.slots > small { width: 100%; font-size: 11px; color: #A07E66; }
+.slot { position: relative; padding: 6px 10px; border-radius: 4px 12px 12px 4px; border: 0; background: #C99A6A; color: #fff; font-size: 12px; box-shadow: 0 2px 0 #9C6D48; animation: flipIn .4s cubic-bezier(.3, 1.6, .5, 1) backwards; animation-delay: calc(var(--i) * .05s); transform-origin: 0 50%; }
+.slot em { display: block; font-style: normal; font-size: 9px; opacity: .85; }
+.slotOn { background: #F59AB8; box-shadow: 0 2px 0 #D27493; }
+@keyframes flipIn { from { transform: rotateY(90deg); } }
+.rubs { margin-top: 12px; }
+.rubs > small { font-size: 11px; color: #A07E66; }
+.rubRow { display: flex; gap: 8px; overflow-x: auto; padding: 6px 2px; }
+.rub { flex: none; width: 76px; display: flex; flex-direction: column; align-items: center; padding: 6px 4px; background: #FFFDF8; border: 1px solid #E6D4C0; box-shadow: 0 2px 4px rgba(90, 60, 40, .12); transform: rotate(calc((var(--i) - 2) * 1.5deg)); }
+.rub img { width: 58px; height: 34px; object-fit: contain; filter: grayscale(1) brightness(.35) contrast(1.2); }
+.rub b { font-size: 11px; color: #5A4A44; }
+.rub small { font-size: 9px; color: #A09088; }

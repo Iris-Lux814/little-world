@@ -1,0 +1,86 @@
+/* 小屋里的几页（CabinPage.tsx）：奶白纸 + 粉缝线；只用 transform / opacity 动画 */
+.mask { position: absolute; inset: 0; z-index: 14; display: flex; align-items: center; justify-content: center; background: rgba(74, 64, 69, .3); animation: fade .25s ease-out backwards;
+  --paper: #FFFDF8; --stitch: #F2B6C8; --pink: #EB7FA3; --ink: #7A5C68; --soft: #A8959D; }
+@keyframes fade { from { opacity: 0; } }
+.card { position: relative; width: min(640px, calc(100% - 20px)); max-height: calc(100% - 16px); display: flex; flex-direction: column; padding: 10px 14px 12px; border-radius: 14px; background: var(--paper);
+  box-shadow: 0 3px 0 rgba(242, 182, 200, .5), 0 12px 28px rgba(60, 50, 30, .25); animation: rise .42s cubic-bezier(.3, 1.4, .5, 1) backwards; }
+.card::before { content: ""; position: absolute; inset: 5px; border: 1.4px dashed var(--stitch); border-radius: 10px; pointer-events: none; }
+@keyframes rise { from { transform: translateY(24px) scale(.95); opacity: 0; } }
+.head { position: relative; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 2px 2px 8px; }
+.head img { width: 30px; }
+.head b { font-size: 15px; color: var(--ink); letter-spacing: .12em; }
+.head span { flex: 1; min-width: 0; font-size: 11.5px; color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.head button { width: 30px; height: 30px; border-radius: 50%; border: 1.2px dashed var(--stitch); background: #fff; color: var(--ink); font-size: 16px; line-height: 1; cursor: pointer; }
+.none { margin: 10px 4px; font-size: 12px; line-height: 1.6; color: var(--soft); text-align: center; }
+
+/* ── 鱼缸 ── */
+.tank { position: relative; flex: none; height: 118px; margin: 0 2px 8px; border-radius: 8px; overflow: hidden; border: 3px solid #9FC6DE; border-top-width: 5px;
+  background: linear-gradient(#DDF3FB, #A9DDF2 60%, #8ECDEA); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .6); }
+.tank::after { content: ""; position: absolute; left: 10px; top: 6px; width: 6px; height: 70%; border-radius: 3px; background: rgba(255, 255, 255, .5); } /* 玻璃反光 */
+.sand { position: absolute; left: 0; right: 0; bottom: 0; height: 16px; background: radial-gradient(circle at 20% 30%, #E9D7AE 2px, transparent 2.5px) 0 0 / 14px 8px, linear-gradient(#F3E3BE, #E2CC9A); }
+.weedA, .weedB { position: absolute; bottom: 10px; width: 10px; height: 46px; border-radius: 50% 50% 0 0; background: #6FB36A; transform-origin: 50% 100%; animation: weed 3.6s ease-in-out infinite; }
+.weedA { left: 14%; } .weedB { right: 18%; height: 36px; background: #8CC56E; animation-delay: -1.4s; }
+@keyframes weed { 50% { transform: rotate(7deg) scaleY(.95); } }
+.swimmer { position: absolute; left: 0; width: 100%; height: 26px; margin-top: -13px; animation: swimX linear infinite; pointer-events: none; }
+.swimmer img { position: absolute; left: 0; width: 42px; height: 26px; object-fit: contain; image-rendering: pixelated; animation: swimFace linear infinite; }
+/* 一条鱼从左游到右再游回来；头朝左画的，往右游时翻过来 */
+@keyframes swimX { 0%, 100% { transform: translateX(6%); } 50% { transform: translateX(84%); } }
+@keyframes swimFace { 0%, 49.9% { transform: scaleX(-1) translateY(0); } 25% { transform: scaleX(-1) translateY(-4px); } 50%, 99.9% { transform: scaleX(1); } 75% { transform: translateY(3px); } }
+.dropIn { position: absolute; left: 50%; top: 0; width: 44px; margin-left: -22px; image-rendering: pixelated; animation: dropIn .7s cubic-bezier(.5, 0, .7, 1) forwards; }
+@keyframes dropIn { 0% { transform: translateY(-40px) rotate(-30deg); opacity: 0; } 30% { opacity: 1; } 60% { transform: translateY(40px) rotate(10deg); } 100% { transform: translateY(46px) rotate(0); opacity: 0; } }
+.ripple { position: absolute; left: 50%; top: 4px; width: 60px; height: 10px; margin-left: -30px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .9); animation: ripple .8s ease-out forwards; }
+@keyframes ripple { from { transform: scale(.3); opacity: 1; } to { transform: scale(2); opacity: 0; } }
+.bub { position: absolute; bottom: 12px; width: 5px; height: 5px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .9); animation: bub 5.4s ease-in infinite; opacity: 0; }
+@keyframes bub { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: .8; } 100% { transform: translate(6px, -96px); opacity: 0; } }
+.emptyTank { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #5C8FAE; }
+.two { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.col { min-height: 0; overflow-y: auto; padding: 4px 6px; border-radius: 10px; border: 1.2px dashed var(--stitch); background: #fff; }
+.col > em { display: block; position: sticky; top: -4px; z-index: 1; padding: 3px 0 5px; background: #fff; font-style: normal; font-size: 11.5px; color: var(--soft); letter-spacing: .1em; }
+.row { display: flex; align-items: center; gap: 6px; padding: 4px 4px 4px 2px; border-left: 3px solid var(--rc); border-radius: 4px; margin-bottom: 4px; animation: in .3s ease-out backwards; }
+@keyframes in { from { transform: translateY(6px); opacity: 0; } }
+.row img { width: 34px; height: 22px; object-fit: contain; image-rendering: pixelated; flex: none; }
+.row span { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.3; }
+.row b { font-size: 12.5px; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row small { font-size: 10.5px; color: var(--soft); }
+.pink, .ghost { flex: none; padding: 3px 10px; border-radius: 999px; font: inherit; font-size: 11.5px; font-weight: 700; cursor: pointer; border: none; }
+.pink { color: #fff; background: linear-gradient(#F59AB8, var(--pink)); box-shadow: 0 2px 0 #D66A8F; }
+.ghost { color: var(--ink); background: #EEF6FB; box-shadow: 0 2px 0 #C9DCEA; }
+.pink:disabled, .ghost:disabled { opacity: .45; }
+.pink:active:not(:disabled), .ghost:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+
+/* ── 纪念品柜：两扇玻璃门往两边拉开，里面三层木架 ── */
+.cabinet { position: relative; flex: 1; min-height: 200px; overflow-y: auto; padding: 10px 12px; border-radius: 10px; background: linear-gradient(#8C5E3C, #7A4F32); box-shadow: inset 0 0 0 4px #A87A52; }
+.doorL, .doorR { position: absolute; top: 4px; bottom: 4px; width: calc(50% - 4px); z-index: 3; pointer-events: none; background: linear-gradient(120deg, rgba(255, 255, 255, .45), rgba(210, 235, 250, .25) 40%, rgba(255, 255, 255, .35)); border: 3px solid #A87A52; }
+.doorL { left: 4px; transform-origin: 0 50%; animation: doorL .7s .15s cubic-bezier(.5, 0, .3, 1) forwards; }
+.doorR { right: 4px; transform-origin: 100% 50%; animation: doorR .7s .15s cubic-bezier(.5, 0, .3, 1) forwards; }
+@keyframes doorL { to { transform: perspective(500px) rotateY(-75deg); opacity: 0; } }
+@keyframes doorR { to { transform: perspective(500px) rotateY(75deg); opacity: 0; } }
+.shelf { position: relative; display: flex; justify-content: center; gap: 10px; min-height: 70px; padding: 4px 0 8px; }
+.shelf::after { content: ""; position: absolute; left: -4px; right: -4px; bottom: 0; height: 7px; border-radius: 2px; background: #C99A6B; box-shadow: 0 3px 0 #9C6E48; }
+.keep { position: relative; width: 92px; height: 64px; padding: 0; border: none; background: none; cursor: pointer; perspective: 500px; animation: keepIn .45s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+@keyframes keepIn { from { transform: translateY(-14px) scale(.8); opacity: 0; } }
+.keepFront, .keepBack { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 1px; padding-bottom: 8px; border-radius: 8px; backface-visibility: hidden; transition: transform .5s cubic-bezier(.3, 1.3, .5, 1); }
+.keepFront img { width: 40px; height: 30px; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .25)); }
+.keepFront b { font-size: 11.5px; color: #FFF6EE; }
+.keepFront small { font-size: 10px; color: #F2D2B0; }
+.keepBack { justify-content: center; padding: 6px; background: var(--paper); color: var(--ink); font-size: 10.5px; line-height: 1.4; transform: rotateY(180deg); box-shadow: 0 2px 6px rgba(0, 0, 0, .25); }
+.keepFlip .keepFront { transform: rotateY(-180deg); } .keepFlip .keepBack { transform: rotateY(0); }
+.cabinet .none { color: #F2D2B0; }
+
+/* ── 纪录板：软木 + 纸卡 + 粉图钉 ── */
+.cork { flex: 1; min-height: 180px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 12px 10px; padding: 14px 12px; border-radius: 8px;
+  background: radial-gradient(circle at 30% 40%, rgba(120, 80, 40, .18) 1px, transparent 1.5px) 0 0 / 7px 7px, radial-gradient(circle at 70% 70%, rgba(255, 240, 210, .25) 1px, transparent 1.5px) 0 0 / 9px 9px, #CFA274;
+  box-shadow: inset 0 0 0 5px #9C6E48; }
+.note { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 10px 4px 6px; background: #FFFBF3; border-top: 3px solid var(--rc); box-shadow: 0 3px 6px rgba(60, 40, 20, .25);
+  transform: rotate(var(--rot)); animation: pinIn .45s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+@keyframes pinIn { from { transform: translateY(-30px) rotate(calc(var(--rot) * -3)) scale(1.15); opacity: 0; } }
+.pin { position: absolute; top: -6px; left: 50%; width: 11px; height: 11px; margin-left: -5.5px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #FFD0DF, var(--pink) 60%, #C9567C); box-shadow: 0 2px 2px rgba(0, 0, 0, .3); }
+.note img { width: 44px; height: 28px; object-fit: contain; image-rendering: pixelated; }
+.note b { font-size: 12px; color: var(--ink); }
+.note span { font-size: 13px; font-weight: 700; color: #C9667F; }
+.note em { font-style: normal; font-size: 10.5px; padding: 0 6px; border-radius: 8px; background: #EEF3FC; color: #7F97CF; }
+.by_player { background: #FDECF1 !important; color: #C9667F !important; }
+.by_pal { background: #EEEFF3 !important; color: #6B6F7A !important; }
+
+@media (max-width: 560px) { .two { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .mask *, .mask { animation-duration: .01s !important; animation-delay: 0s !important; } }

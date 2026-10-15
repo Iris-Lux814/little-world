@@ -1,0 +1,168 @@
+/* 鱼桶牌：房间 / 椅子 / 按钮 / 小纸条用 WorldDdz.module.css，这里只放鱼桶牌自己的 */
+
+/* ── 天气小圆窗（window.webp：圆孔在 左 14.1% 上 8.4% 宽 70.4% 高 66.7%，下面挂木牌 78.4%~92.6%） ── */
+.wxWin { position: absolute; left: 50cqw; top: .2cqw; width: 17.6cqw; aspect-ratio: 1149 / 1193; transform: translateX(-50%); z-index: 2; pointer-events: none; }
+.wxFrame { position: absolute; inset: 0; width: 100%; height: 100%; }
+.wxView { position: absolute; left: 14.1%; top: 8.4%; width: 70.4%; height: 66.7%; border-radius: 50%; overflow: hidden; background: #6d5a52 center / cover no-repeat; transition: filter .6s; }
+.wxOpen .wxView { animation: wxIn .8s cubic-bezier(.3, 1.2, .5, 1); }
+@keyframes wxIn { from { filter: brightness(.4) saturate(.4); transform: scale(.92); } to { filter: none; transform: none; } }
+/* 两扇木窗：天气牌扣着就关着，翻开时往两边「啪」地推开 */
+.shutter { position: absolute; top: 0; bottom: 0; width: 50%; background: repeating-linear-gradient(0deg, #b8784a 0 1.1cqw, #a86a3f 1.1cqw 1.25cqw); box-shadow: inset 0 0 0 .25cqw #8c5533; transition: transform .55s cubic-bezier(.5, 1.6, .5, 1); }
+.shL { left: 0; transform-origin: left center; } .shR { right: 0; transform-origin: right center; }
+.shL::after, .shR::after { content: ""; position: absolute; top: 46%; width: .7cqw; height: .7cqw; border-radius: 50%; background: #f2c97a; box-shadow: 0 0 0 .15cqw #8c5533; }
+.shL::after { right: .5cqw; } .shR::after { left: .5cqw; }
+.wxOpen .shL { transform: perspective(20cqw) rotateY(-100deg); } .wxOpen .shR { transform: perspective(20cqw) rotateY(100deg); }
+.wxWin:not(.wxOpen) .wxView::after { content: "?"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 3.6cqw; font-weight: 900; color: #fff3df; text-shadow: 0 .2cqw 0 #8c5533; animation: bob 1.8s ease-in-out infinite; z-index: 2; }
+.wxPeek .wxView { box-shadow: 0 0 0 .3cqw #ffe9a8, 0 0 1.6cqw #ffd86b; animation: peekGlow 1.6s ease-in-out infinite; }
+@keyframes peekGlow { 50% { box-shadow: 0 0 0 .3cqw #fff3c4, 0 0 2.6cqw #ffd86b; } }
+.wxPlate { position: absolute; left: 13%; right: 13%; top: 79%; height: 13%; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.05cqw; line-height: 1.12; font-weight: 800; color: #7a4a32; padding: 0 .3cqw; }
+.wxPlate em { font-style: normal; color: #c9852a; }
+/* 雨：斜着的细线一直往下落 */
+.rain { position: absolute; inset: -20%; background: repeating-linear-gradient(105deg, transparent 0 .9cqw, rgba(220, 238, 255, .55) .9cqw 1cqw); animation: rain .5s linear infinite; }
+@keyframes rain { from { transform: translate(0, -1.6cqw); } to { transform: translate(-.4cqw, 0); } }
+/* 雾：两层白纱慢慢飘 */
+.fog { position: absolute; inset: 0 -60%; background: radial-gradient(ellipse 30% 22% at 30% 50%, rgba(255, 255, 255, .75), transparent 70%), radial-gradient(ellipse 26% 18% at 75% 40%, rgba(255, 255, 255, .6), transparent 70%); animation: fog 7s ease-in-out infinite alternate; }
+.fog2 { top: 30%; animation-duration: 9s; animation-direction: alternate-reverse; opacity: .8; }
+@keyframes fog { to { transform: translateX(30%); } }
+/* 大风：几道风线 + 叶子横着刮过去 */
+.wind em { position: absolute; left: -30%; top: calc(18% + var(--i) * 15%); width: 40%; height: .18cqw; border-radius: .2cqw; background: rgba(255, 255, 255, .8); animation: gust 1.4s ease-in infinite; animation-delay: calc(var(--i) * .27s); }
+.wind em:nth-child(odd)::after { content: ""; position: absolute; right: -.6cqw; top: -.3cqw; width: .7cqw; height: .45cqw; border-radius: 0 70% 0 70%; background: #8fbf6a; }
+@keyframes gust { to { transform: translateX(330%); opacity: 0; } }
+/* 夜：星星一闪一闪 */
+.stars2 em { position: absolute; left: calc(12% + var(--i) * 9%); top: calc(10% + (var(--i) * 37 % 60) * 1%); width: .35cqw; height: .35cqw; background: #fff6cf; border-radius: 50%; box-shadow: 0 0 .5cqw #fff3b0; animation: twinkle 1.6s ease-in-out infinite; animation-delay: calc(var(--i) * .23s); }
+@keyframes twinkle { 50% { opacity: .2; transform: scale(.5); } }
+/* 晴：一圈暖光慢慢转 */
+.sun { position: absolute; right: 8%; top: 8%; width: 40%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, #fff6c2 0 22%, rgba(255, 220, 120, .55) 23% 40%, transparent 62%); animation: sunPulse 3s ease-in-out infinite; }
+@keyframes sunPulse { 50% { transform: scale(1.12) rotate(20deg); } }
+
+/* ── 大木鱼桶 ── tub.webp 1384×734；水面椭圆中心 (49.9%, 31.7%)、半径 40.8% / 19% */
+.tub { position: absolute; left: 50cqw; top: 26cqw; width: 30cqw; transform: translateX(-50%); z-index: 3; pointer-events: none; }
+.tub > img { display: block; width: 100%; }
+.water { position: absolute; left: 50%; top: 31.7%; width: 24.4cqw; height: 6cqw; transform: translate(-50%, -50%); border-radius: 50%; overflow: hidden; }
+.ripple { position: absolute; left: 50%; top: 50%; width: 30%; height: 30%; border-radius: 50%; border: .18cqw solid rgba(255, 255, 255, .55); transform: translate(-50%, -50%); animation: ripple 3.4s ease-out infinite; }
+.ripple2 { animation-delay: 1.7s; left: 32%; top: 58%; }
+@keyframes ripple { from { width: 4%; height: 4%; opacity: .9; } to { width: 70%; height: 70%; opacity: 0; } }
+/* 扣下的牌：牌背朝上浮在水里，轻轻晃 */
+.sunkCard { position: absolute; width: 3.2cqw; height: 2.1cqw; transform: translate(-50%, -50%) rotate(-8deg); border-radius: .3cqw; background: url(/world-ddz/back.png) center / cover; opacity: .75; filter: saturate(.7) hue-rotate(-10deg) brightness(1.05); box-shadow: 0 0 0 .12cqw rgba(255, 255, 255, .5); animation: floaty 2.4s ease-in-out infinite; }
+.sunkMine { transform: translate(-50%, -50%) rotate(6deg); animation-delay: .8s; }
+@keyframes floaty { 50% { margin-top: .25cqw; } }
+.bubbles { position: absolute; top: 20%; width: 2cqw; height: 4cqw; transform: translateX(-50%); }
+.bubbles em { position: absolute; bottom: 0; width: .55cqw; height: .55cqw; border-radius: 50%; border: .12cqw solid rgba(255, 255, 255, .9); animation: bub 1.5s ease-out infinite; }
+.bubbles em:nth-child(2) { left: .7cqw; animation-delay: .4s; } .bubbles em:nth-child(3) { left: 1.3cqw; animation-delay: .8s; }
+@keyframes bub { from { transform: translateY(0) scale(.6); opacity: 1; } to { transform: translateY(-3cqw) scale(1.1); opacity: 0; } }
+.pot { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); font-size: 1cqw; font-weight: 800; color: #fff; text-shadow: 0 .1cqw .2cqw rgba(30, 80, 120, .6); white-space: nowrap; }
+/* 自己扣的那张：从手里飞到桶中央，翻成牌背，沉下去 */
+.sinking { position: absolute; left: 50cqw; top: 31cqw; z-index: 6; pointer-events: none; animation: sinkFly 1.3s cubic-bezier(.4, 0, .5, 1) forwards; }
+.sinking > span { transform-origin: center; animation: sinkFlip 1.3s ease-in forwards; }
+@keyframes sinkFly { 0% { transform: translate(-50%, 18cqw) scale(1); } 45% { transform: translate(-50%, -2cqw) scale(.8) rotate(-6deg); } 70% { transform: translate(-50%, 0) scale(.6); opacity: 1; } 100% { transform: translate(-50%, 1.6cqw) scale(.5); opacity: 0; } }
+@keyframes sinkFlip { 0%, 40% { filter: none; } 60% { transform: rotateY(90deg); } 61%, 100% { transform: rotateY(180deg); filter: hue-rotate(160deg) brightness(.7); } }
+
+/* ── 每人一只小木桶 ── */
+.bucket { position: absolute; width: 7cqw; transform: translate(-50%, -50%); z-index: 3; pointer-events: none; }
+.bucket img { display: block; width: 100%; }
+.bucket b { position: absolute; left: 50%; top: 66%; transform: translate(-50%, -50%); font-size: 1.25cqw; font-weight: 900; color: #7a4a32; white-space: nowrap; }
+.bucketHit { animation: plunk .5s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes plunk { 30% { transform: translate(-50%, -42%) scale(1.06, .9); } }
+.bucketWin { animation: bucketBob 1.4s ease-in-out infinite; }
+@keyframes bucketBob { 50% { transform: translate(-50%, calc(-50% - .4cqw)); } }
+.jumpers em { position: absolute; left: calc(25% + var(--i) * 25%); top: 20%; width: 1.4cqw; height: .8cqw; border-radius: 50% 40% 40% 50%; background: #9ccbe0; box-shadow: inset -.3cqw 0 0 #6aa6c4; animation: hop 1s ease-in-out infinite; animation-delay: calc(var(--i) * .22s); }
+@keyframes hop { 0%, 100% { transform: translateY(0) rotate(0); } 45% { transform: translateY(-2.6cqw) rotate(-30deg); } }
+
+/* ── 鱼牌 ── 跟斗地主的牌同一套奶白粉边，中间是那条鱼 */
+.card { position: relative; flex: none; width: 7.4cqw; height: 10.6cqw; border-radius: .7cqw; background: #fffdf8; box-shadow: 0 0 0 .18cqw #e9b9c4, inset 0 0 0 .35cqw #fff, inset 0 0 0 .45cqw #f6dfe3, 0 .3cqw .5cqw rgba(140, 90, 80, .25); display: block; overflow: hidden; touch-action: none; }
+.card::before { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, .7) 45%, transparent 60%); transform: translateX(-120%); transition: transform .5s; pointer-events: none; z-index: 2; }
+.card:hover::before, .card.up::before { transform: translateX(120%); }
+.stars { position: absolute; left: .5cqw; top: .45cqw; display: flex; gap: .1cqw; }
+.stars em { width: .85cqw; height: .85cqw; background: #f5b83d; clip-path: polygon(50% 0, 62% 35%, 100% 38%, 70% 60%, 80% 100%, 50% 76%, 20% 100%, 30% 60%, 0 38%, 38% 35%); }
+.fishImg { position: absolute; left: 50%; top: 40%; width: 76%; height: 44%; object-fit: contain; transform: translate(-50%, -50%); image-rendering: pixelated; animation: swimIdle 2.6s ease-in-out infinite; }
+@keyframes swimIdle { 50% { transform: translate(-50%, -50%) rotate(-4deg) translateX(-.2cqw); } }
+.fishGhost { position: absolute; left: 50%; top: 40%; width: 50%; height: 26%; transform: translate(-50%, -50%); border-radius: 50%; background: #d8e8ee; }
+.cname { position: absolute; left: 0; right: 0; top: 63%; text-align: center; font-size: 1.05cqw; font-weight: 800; color: #6b4436; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 .3cqw; }
+.kg { position: absolute; right: .5cqw; top: .35cqw; font-size: .95cqw; font-weight: 800; color: #a0705e; }
+.band { position: absolute; left: .45cqw; right: .45cqw; bottom: .45cqw; height: 1.6cqw; border-radius: 0 0 .4cqw .4cqw; display: flex; align-items: center; justify-content: center; font-style: normal; font-size: .9cqw; font-weight: 800; color: #fff; letter-spacing: .1em; }
+.b_pond { background: linear-gradient(#9fd08a, #7bb867); } .b_lake { background: linear-gradient(#8cc6ec, #5ea6d8); } .b_sea { background: linear-gradient(#7fd6cf, #4fb7b0); } .b_river { background: linear-gradient(#9a8ad8, #6b5cb8); }
+.legend { box-shadow: 0 0 0 .25cqw #f2c14e, inset 0 0 0 .35cqw #fff8e2, inset 0 0 0 .45cqw #f6dc93, 0 0 1.2cqw rgba(255, 200, 80, .6); animation: legendGlow 2s ease-in-out infinite; }
+.legend .band { background: linear-gradient(#f7d070, #e2a93a); }
+@keyframes legendGlow { 50% { box-shadow: 0 0 0 .25cqw #ffe08a, inset 0 0 0 .35cqw #fff8e2, inset 0 0 0 .45cqw #f6dc93, 0 0 2cqw rgba(255, 210, 90, .9); } }
+.junk { filter: saturate(.55); } .junk .band { background: linear-gradient(#bdb3a8, #9c9186); }
+.small { width: 5.6cqw; height: 8cqw; } .small .cname { font-size: .85cqw; } .small .stars em { width: .65cqw; height: .65cqw; } .small .band { height: 1.2cqw; font-size: .75cqw; } .small .kg { font-size: .75cqw; }
+.back { display: block; width: 5.6cqw; height: 8cqw; border-radius: .6cqw; background: url(/world-ddz/back.png) center / cover; box-shadow: 0 .3cqw .5cqw rgba(140, 90, 80, .25); }
+
+/* 手牌：5 张一排，扇形一点点；选中的抬起来，按住能拖 */
+.hand { position: absolute; left: 14cqw; right: 14cqw; bottom: 1.6cqw; height: 13cqw; display: flex; justify-content: center; align-items: flex-end; gap: 1cqw; z-index: 4; }
+.hand .card { transform: translateY(calc(abs(var(--i) - (var(--n) - 1) / 2) * .5cqw)) rotate(calc((var(--i) - (var(--n) - 1) / 2) * 2.5deg)); animation: dealIn .55s cubic-bezier(.3, 1.4, .5, 1) backwards; cursor: grab; transition: transform .18s, box-shadow .18s; }
+.hand .card.up { transform: translateY(-2.4cqw) rotate(0); box-shadow: 0 0 0 .3cqw #ef8fb0, inset 0 0 0 .35cqw #fff, 0 .8cqw 1.4cqw rgba(200, 90, 130, .35); }
+.hand .card.legend.up { box-shadow: 0 0 0 .3cqw #f2c14e, 0 0 2cqw rgba(255, 200, 80, .8); }
+.hand .card.dragging { transition: none; z-index: 5; box-shadow: 0 1.4cqw 2cqw rgba(120, 80, 60, .35), 0 0 0 .3cqw #ef8fb0; }
+/* 发牌：从鱼桶里一张张跳进手里 */
+@keyframes dealIn { from { transform: translate(calc((var(--n) - 1) / 2 * 8.4cqw - var(--i) * 8.4cqw), -22cqw) scale(.4) rotate(200deg); opacity: 0; } 60% { opacity: 1; } }
+
+/* ── 翻牌 ── */
+.reveal { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+.rvSlot { position: absolute; width: 0; height: 0; }
+.rvCard { position: absolute; left: 0; top: 0; transform: translate(-50%, -50%); animation: rvRise .65s cubic-bezier(.2, 1.3, .5, 1) backwards; }
+@keyframes rvRise { from { transform: translate(-50%, -10%) scale(.5); opacity: 0; filter: hue-rotate(160deg) brightness(.6); } to { transform: translate(-50%, -50%); } }
+.rvFlip > span { animation: rvFlip .4s ease-out; }
+@keyframes rvFlip { from { transform: rotateY(90deg); } }
+.rvWho { position: absolute; left: 50%; bottom: -2cqw; transform: translateX(-50%); font-size: 1.1cqw; font-weight: 800; color: #fff; background: rgba(160, 100, 80, .75); padding: .1cqw .7cqw; border-radius: 1cqw; white-space: nowrap; }
+/* 鱼跃：牌力越大跳得越高（--h），在最高点停一下亮数字 */
+.leaper { position: absolute; left: 0; top: -2cqw; width: 6cqw; height: 4cqw; transform: translate(-50%, -50%); animation: leap 1s cubic-bezier(.25, .9, .4, 1) forwards; }
+.leaper img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; filter: drop-shadow(0 .3cqw .2cqw rgba(30, 70, 110, .3)); }
+@keyframes leap { 0% { transform: translate(-50%, 0) rotate(40deg) scale(.6); opacity: 0; } 15% { opacity: 1; } 60%, 100% { transform: translate(-50%, calc(-1 * var(--h))) rotate(-12deg) scale(1.15); } }
+.pw { position: absolute; left: 50%; top: -1.8cqw; transform: translateX(-50%); font-size: 1.7cqw; font-weight: 900; color: #fff; text-shadow: 0 0 .3cqw #e0749a, 0 .15cqw 0 #c25b80; animation: pwIn .5s .45s cubic-bezier(.3, 1.8, .5, 1) backwards; }
+@keyframes pwIn { from { transform: translateX(-50%) scale(0); } }
+.splash em { position: absolute; left: 50%; bottom: -1cqw; width: .5cqw; height: .5cqw; border-radius: 50%; background: #bfe6f7; animation: drop .7s ease-out forwards; }
+.splash em:nth-child(1) { --dx: -2.4cqw; } .splash em:nth-child(2) { --dx: -1cqw; animation-delay: .05s; } .splash em:nth-child(3) { --dx: 1.1cqw; animation-delay: .08s; } .splash em:nth-child(4) { --dx: 2.5cqw; animation-delay: .03s; }
+@keyframes drop { 0% { transform: translate(0, 0); opacity: 1; } 50% { transform: translate(var(--dx), -1.8cqw); } 100% { transform: translate(calc(var(--dx) * 1.4), 1.2cqw); opacity: 0; } }
+/* 赢的那条：甩着水花划一道弧落进赢家的桶 */
+.toBucket { animation: toBucket .9s cubic-bezier(.4, 0, .6, 1) forwards; }
+@keyframes toBucket { 0% { transform: translate(-50%, calc(-1 * var(--h))) rotate(-12deg) scale(1.15); } 50% { transform: translate(calc(-50% + var(--bx) * .5), calc(-1 * var(--h) - 4cqw)) rotate(160deg) scale(1); } 100% { transform: translate(calc(-50% + var(--bx)), calc(var(--by) - 1cqw)) rotate(300deg) scale(.5); opacity: 0; } }
+/* 最小那条放生：慢慢游出桶沿，回头吐个泡泡 */
+.swimAway { animation: swimAway 2s ease-in-out forwards; }
+@keyframes swimAway { 0% { transform: translate(-50%, calc(-1 * var(--h))) rotate(-12deg) scale(1.15); } 30% { transform: translate(-50%, .5cqw) rotate(10deg) scale(.9); opacity: .9; } 100% { transform: translate(calc(-50% + 14cqw), 2cqw) scaleX(-1) scale(.7); opacity: 0; } }
+/* 其余的：落回水里 */
+.dive { animation: dive .7s ease-in forwards; }
+@keyframes dive { 0% { transform: translate(-50%, calc(-1 * var(--h))) rotate(-12deg) scale(1.15); } 100% { transform: translate(-50%, 1cqw) rotate(90deg) scale(.6); opacity: 0; } }
+.peekBubble { position: absolute; left: 4cqw; top: -1cqw; white-space: nowrap; font-size: 1.2cqw; font-weight: 800; color: #6b5cb8; background: radial-gradient(circle at 30% 30%, #fff, #e6f4fb); padding: .5cqw 1.1cqw; border-radius: 2cqw; box-shadow: 0 0 0 .15cqw #b8dff0; animation: bubbleUp .6s .5s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+@keyframes bubbleUp { from { transform: translateY(1.5cqw) scale(.2); opacity: 0; } }
+.rvText { position: absolute; left: 50%; top: 41.6cqw; transform: translateX(-50%); max-width: 66cqw; font-size: 1.1cqw !important; padding: .3cqw 1.2cqw !important; text-align: center; font-size: 1.25cqw; font-weight: 700; color: #7a4a32; background: rgba(255, 250, 243, .94); padding: .5cqw 1.4cqw; border-radius: 1.4cqw; box-shadow: 0 0 0 .2cqw #f2b6c8; animation: fadeUp .4s 1.2s ease-out backwards; }
+
+/* ── 头顶木牌 / 等人 / 按钮 ── */
+.sign { position: absolute; left: 0; transform: translateX(-50%); white-space: nowrap; font-size: 1.15cqw; font-weight: 800; color: #7a4a32; background: #f3dcb6; padding: .25cqw .9cqw; border-radius: .4cqw; box-shadow: 0 0 0 .15cqw #b98352, 0 .25cqw 0 rgba(120, 80, 50, .3); animation: signIn .45s cubic-bezier(.3, 1.6, .5, 1); z-index: 3; }
+.signOn { background: #fff3d6; animation: signIn .45s cubic-bezier(.3, 1.6, .5, 1), swaySign 2.4s .5s ease-in-out infinite; }
+@keyframes signIn { from { transform: translateX(-50%) translateY(-1cqw) rotate(-14deg); opacity: 0; } }
+@keyframes swaySign { 50% { transform: translateX(-50%) rotate(4deg); } }
+.ghost { opacity: .45; filter: grayscale(.4); }
+.idleBox { display: flex; flex-direction: column; align-items: center; gap: 1.2cqw; }
+.startRow { display: flex; gap: 1cqw; align-items: center; }
+.small2 { font-size: 1.6cqw; font-weight: 800; color: #c25b80; background: #fffaf3; padding: .7cqw 1.8cqw; border-radius: 2cqw; box-shadow: 0 0 0 .22cqw #f2b6c8, 0 .35cqw 0 rgba(200, 120, 150, .3); }
+.small2:active { transform: scale(.94); }
+.waitTxt { font-size: 1.9cqw; font-weight: 800; color: #fff; background: rgba(160, 100, 80, .78); padding: .6cqw 2cqw; border-radius: 2cqw; animation: bob 1.8s ease-in-out infinite; }
+.favorRow { display: flex; gap: .8cqw; margin-top: .4cqw; }
+.favor { font-size: 1.4cqw; font-weight: 800; color: #fff; background: #7fb3d5; padding: .5cqw 1.4cqw; border-radius: 1.6cqw; box-shadow: 0 .3cqw 0 rgba(60, 110, 150, .35); }
+.switch { position: absolute; right: 7cqw; top: 1.6cqw; font-size: 1.3cqw; font-weight: 800; color: #c25b80; background: #fffaf3; padding: .5cqw 1.3cqw; border-radius: 1.6cqw; box-shadow: 0 0 0 .2cqw #f2b6c8; z-index: 6; }
+.closedTip { position: absolute; left: 50%; bottom: 15.5cqw; transform: translateX(-50%); font-size: 1.3cqw; color: #fff; background: rgba(120, 80, 60, .7); padding: .4cqw 1.4cqw; border-radius: 1.4cqw; z-index: 6; }
+@keyframes fadeUp { from { opacity: 0; transform: translate(-50%, .6cqw); } }
+@keyframes bob { 50% { transform: translateY(-.3cqw); } }
+
+/* ── 牌盒：点牌桌先弹这个，盒盖往后一翻，里面竖着几副牌，抽出来那副往上一跳 ── */
+.boxMask { position: absolute; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center; background: rgba(60, 40, 30, .45); animation: boxDim .3s ease-out; }
+@keyframes boxDim { from { background: transparent; } }
+.box { position: relative; width: min(86vw, 420px); padding: 64px 22px 56px; border-radius: 22px 22px 18px 18px; background: linear-gradient(#c98a5a, #b07448); box-shadow: inset 0 0 0 5px #8f5a36, inset 0 10px 0 rgba(255, 255, 255, .12), 0 14px 30px rgba(60, 30, 20, .4); animation: boxPop .5s cubic-bezier(.3, 1.4, .5, 1); }
+@keyframes boxPop { from { transform: translateY(40px) scale(.7); opacity: 0; } }
+.boxLid { position: absolute; left: -6px; right: -6px; top: -10px; height: 44px; border-radius: 16px 16px 6px 6px; background: linear-gradient(#e7a6b8, #d98aa2); box-shadow: inset 0 0 0 4px #c46e8a, 0 4px 0 rgba(120, 50, 70, .3); transform-origin: center top; animation: lidOpen .7s .15s cubic-bezier(.4, 1.4, .5, 1) forwards; }
+.boxLid::after { content: ""; position: absolute; left: 50%; top: 50%; width: 46px; height: 12px; border-radius: 6px; transform: translate(-50%, -50%); background: #fff3f6; opacity: .7; }
+@keyframes lidOpen { to { transform: perspective(500px) rotateX(-115deg) translateY(-4px); } }
+.decks { display: flex; gap: 18px; justify-content: center; }
+.deck { position: relative; width: 132px; height: 180px; border-radius: 12px; background: #fffdf8; box-shadow: 0 0 0 3px #e9b9c4, inset 0 0 0 6px #fff, inset 0 0 0 8px #f6dfe3, 0 6px 0 rgba(120, 70, 50, .35); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 14px; gap: 3px; animation: deckUp .5s cubic-bezier(.3, 1.5, .5, 1) backwards; animation-delay: calc(.45s + var(--i) * .1s); transition: transform .25s; }
+@keyframes deckUp { from { transform: translateY(70px); } }
+.deck:active { transform: translateY(-6px) scale(.97); }
+.deck b { font-size: 19px; font-weight: 900; color: #c25b80; } .deck small { font-size: 12px; color: #a0705e; font-weight: 700; }
+.deckFace { position: absolute; left: 50%; top: 16px; width: 86px; height: 92px; transform: translateX(-50%); border-radius: 8px; background: url(/world-ddz/back.png) center / cover; box-shadow: 4px 4px 0 #f2d3dc, 8px 8px 0 #ead0c5; }
+.deck_fish .deckFace { background: radial-gradient(ellipse 60% 40% at 50% 62%, #8cc6ec, #5ea6d8 70%, #4a8fc2); }
+.deck_fish .deckFace::after { content: ""; position: absolute; left: 50%; top: 42%; width: 64%; height: 40%; transform: translate(-50%, -50%); background: url(/world-fish/carp_red.png) center / contain no-repeat; image-rendering: pixelated; animation: swimIdle2 2.4s ease-in-out infinite; }
+@keyframes swimIdle2 { 50% { transform: translate(-56%, -56%) rotate(-6deg); } }
+.pulled { animation: pull .55s cubic-bezier(.4, 0, .6, 1) forwards; }
+@keyframes pull { 40% { transform: translateY(-46px) rotate(-4deg); } 100% { transform: translateY(-260px) scale(1.4) rotate(8deg); opacity: 0; } }
+.boxFront { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); font-style: normal; font-size: 15px; font-weight: 800; color: #fff3df; letter-spacing: .2em; text-shadow: 0 2px 0 rgba(90, 50, 30, .4); white-space: nowrap; }
+.wxLong { font-size: .78cqw; line-height: 1.05; }

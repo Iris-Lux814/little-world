@@ -1,0 +1,58 @@
+/* 种子袋（见 WorldSeeds.tsx）：麻布小口袋从底下弹上来，绳结松开，纸种子袋扇形滑出来 */
+.mask { position: absolute; inset: 0; z-index: 30; display: flex; align-items: flex-end; justify-content: center; padding: 0 12px calc(14px + env(safe-area-inset-bottom)); background: rgba(40, 30, 38, .32); animation: dim .3s ease-out; }
+.out { animation: undim .3s ease-in forwards; }
+.out .pouch { animation: sink .3s ease-in forwards; }
+@keyframes dim { from { background: rgba(40, 30, 38, 0); } }
+@keyframes undim { to { background: rgba(40, 30, 38, 0); } }
+@keyframes sink { to { transform: translateY(120%); } }
+
+/* 布袋：麻布纹 + 粉色缝线，上沿是收口的褶 */
+.pouch { position: relative; width: min(560px, 100%); padding: 16px 12px 10px; border-radius: 22px 22px 18px 18px; isolation: isolate;
+  background: radial-gradient(circle at 20% 10%, rgba(255, 255, 255, .5), transparent 40%), repeating-linear-gradient(0deg, rgba(160, 120, 80, .07) 0 2px, transparent 2px 4px), repeating-linear-gradient(90deg, rgba(160, 120, 80, .07) 0 2px, transparent 2px 4px), #f6ead6;
+  border: 2px solid #d8b98e; box-shadow: 0 6px 0 rgba(170, 130, 90, .28), 0 14px 30px rgba(80, 50, 40, .22);
+  animation: popUp .5s cubic-bezier(.3, 1.5, .5, 1) backwards; }
+.pouch::before { content: ""; position: absolute; inset: 6px; border: 1.5px dashed rgba(232, 149, 172, .55); border-radius: 17px 17px 13px 13px; pointer-events: none; z-index: -1; }
+@keyframes popUp { from { transform: translateY(110%) scale(.9); } }
+
+.head { display: flex; align-items: center; gap: 8px; padding: 0 4px 8px; }
+.mel { flex: none; margin-top: -26px; animation: bob 2.4s ease-in-out infinite; transform-origin: 50% 90%; }
+@keyframes bob { 50% { transform: rotate(4deg) translateY(-2px); } }
+.title { flex: 1; display: flex; flex-direction: column; font-size: 15px; font-weight: 700; color: #a2604f; }
+.title em { font-style: normal; font-size: 11px; font-weight: 500; color: #b9957a; margin-top: 1px; }
+/* 麻绳结：一开始系着，打开时松开往两边垂 */
+.knot { position: absolute; top: -9px; left: 50%; width: 30px; height: 16px; margin-left: -15px; border-radius: 50%; border: 3px solid #c99a62; border-bottom-color: transparent; transition: transform .35s cubic-bezier(.3, 1.6, .5, 1); }
+.open .knot { transform: scaleX(1.8) translateY(-3px) rotate(4deg); border-color: #d6aa74; border-bottom-color: transparent; }
+.coins { flex: none; display: flex; align-items: baseline; gap: 3px; padding: 3px 9px 3px 7px; border-radius: 10px; background: rgba(255, 253, 248, .92); border: 1.2px dashed #B9C8E8; color: #7F97CF; font-weight: 700; font-size: 13px; }
+.coins i { width: 8px; height: 10px; align-self: center; border-radius: 50% 50% 45% 45%; background: linear-gradient(135deg, #fff 0 25%, #BFE3F2 45%, #9C8FE0 100%); }
+
+/* 扇形的纸种子袋 */
+.fan { display: flex; gap: 8px; overflow-x: auto; padding: 14px 4px 10px; scrollbar-width: none; justify-content: safe center; }
+.fan::-webkit-scrollbar { display: none; }
+.pack { position: relative; flex: none; width: 74px; height: 98px; padding: 18px 4px 6px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px;
+  background: linear-gradient(180deg, #fffaf0, #fbefdc); border: 1.5px solid #e2c8a3; border-radius: 6px 6px 10px 10px; box-shadow: 0 3px 0 rgba(190, 150, 110, .25);
+  transform: translateY(70px) rotate(0deg) scale(.6); opacity: 0; transition: transform .45s cubic-bezier(.3, 1.5, .5, 1), opacity .25s; transition-delay: calc(var(--i) * 55ms + .35s); }
+.open .pack { transform: translateY(0) rotate(var(--r)) scale(1); opacity: 1; }
+.pack:active { transform: translateY(-4px) rotate(0deg) scale(1.04) !important; transition-delay: 0s; }
+.pack b { font-size: 12px; font-weight: 700; color: #8a5a4a; white-space: nowrap; }
+/* 纸袋上沿：折起来的封口，一道锯齿 */
+.flap { position: absolute; left: -1.5px; right: -1.5px; top: -1.5px; height: 14px; border-radius: 6px 6px 0 0; background: #f2b6c8; border: 1.5px solid #e595ad;
+  -webkit-mask: linear-gradient(#000 0 0) top/100% 9px no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom/8px 5px repeat-x;
+  mask: linear-gradient(#000 0 0) top/100% 9px no-repeat, conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom/8px 5px repeat-x; }
+.pic { display: block; image-rendering: pixelated; background-repeat: no-repeat; filter: drop-shadow(0 1px 0 rgba(120, 80, 50, .25)); }
+.cnt { position: absolute; top: 16px; right: 4px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; background: #e88aa8; color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; box-shadow: 0 1px 0 rgba(180, 70, 110, .35); }
+/* 没有的：灰掉，底下挂一张小价签 */
+.none { background: linear-gradient(180deg, #f6f2ec, #ece6dd); border-color: #d9cfc2; }
+.none .pic { filter: grayscale(.85) opacity(.55); }
+.none .flap { background: #ddd3c8; border-color: #cbbfb1; }
+.none b { color: #a99a8c; }
+.tag { position: absolute; bottom: -9px; left: 50%; transform: translateX(-50%) rotate(-4deg); padding: 1px 6px; border-radius: 4px; background: #fffdf6; border: 1.2px dashed #B9C8E8; color: #7F97CF; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.hyb { background: linear-gradient(180deg, #fbf6ff, #efe6fb); border-color: #cdb8ea; }
+.hyb .flap { background: #c9b3ff; border-color: #a991e6; }
+/* 点了：纸袋一抖，一颗种子蹦出去 */
+.going { animation: shakePack .4s ease-in-out; }
+@keyframes shakePack { 25% { transform: rotate(-8deg) translateY(-6px); } 60% { transform: rotate(6deg) translateY(-3px); } }
+.seed { position: absolute; top: 4px; left: 50%; width: 6px; height: 8px; margin-left: -3px; border-radius: 50%; background: #9b6b3f; box-shadow: inset -1px -1px 0 #6e4a2a; animation: hop .42s cubic-bezier(.3, .6, .6, 1) forwards; }
+@keyframes hop { to { transform: translate(10px, -90px) rotate(200deg); opacity: 0; } }
+
+.foot { text-align: center; font-size: 10.5px; color: #b9957a; padding-top: 2px; }
+@media (prefers-reduced-motion: reduce) { .mel { animation: none; } }

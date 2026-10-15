@@ -1,0 +1,97 @@
+/* 打赌欠条：奶白信纸 + 粉色针脚边，字用霞鹜文楷（手写感）；印章、纸飞机、撕纸都是 CSS 动画 */
+.mask { position: absolute; inset: 0; z-index: 30; display: flex; align-items: center; justify-content: center; padding: 12px 16px; background: rgba(60, 35, 50, .3); animation: fade .25s ease both; }
+.maskOut { animation: fadeOut .3s ease forwards; }
+@keyframes fade { from { opacity: 0; } }
+@keyframes fadeOut { to { opacity: 0; } }
+.paper { position: relative; width: min(400px, 100%); max-height: 100%; overflow-y: auto; padding: 16px 16px 14px; border-radius: 6px 6px 14px 14px; isolation: isolate;
+  background: repeating-linear-gradient(transparent 0 27px, rgba(242, 182, 200, .28) 27px 28px), #fffaf2; border: 2px dashed #f0b8ca; box-shadow: 0 4px 0 rgba(242, 182, 200, .5), 0 14px 30px rgba(80, 40, 60, .25);
+  display: flex; flex-direction: column; gap: 8px; animation: paperIn .5s cubic-bezier(.3, 1.4, .5, 1) both; font-family: "LXGW WenKai Screen", "Kaiti SC", serif; color: #7a5664; }
+.paperOut { animation: paperOut .3s ease-in forwards; }
+@keyframes paperIn { from { opacity: 0; transform: translateY(30px) rotate(-4deg) scale(.9); } }
+@keyframes paperOut { to { opacity: 0; transform: translateY(24px) rotate(3deg) scale(.92); } }
+.x { position: absolute; right: 6px; top: 4px; width: 30px; height: 30px; border: none; background: none; font-size: 20px; color: #c0607f; cursor: pointer; z-index: 2; }
+.title { align-self: center; font-size: 20px; letter-spacing: 6px; color: #c0507a; }
+.row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.row > span { flex: none; width: 58px; font-size: 13.5px; color: #9c7280; }
+.row input { flex: 1; min-width: 0; font: inherit; font-size: 15px; color: #6b4a58; padding: 5px 8px; border: none; border-bottom: 1.5px dashed #e9a8be; background: transparent; outline: none; }
+.whos, .pills { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.whos button, .pills button { font: inherit; font-size: 13px; display: flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; border: 1.5px solid #f1cddb; background: #fff; color: #9c6a7e; cursor: pointer; transition: transform .2s, background .2s; }
+.whos button img { width: 20px; height: 20px; object-fit: contain; }
+.whos .on, .pills .on { background: #ffe1ec; border-color: #e58aa8; color: #b04a70; transform: scale(1.05); }
+.presets { display: flex; flex-wrap: wrap; gap: 5px; padding-left: 66px; }
+.presets button { font: inherit; font-size: 12px; padding: 2px 8px; border-radius: 6px; border: 1px dashed #e8b9c9; background: #fff6f9; color: #a87086; cursor: pointer; }
+.signs { display: flex; justify-content: space-between; gap: 10px; margin-top: 4px; font-size: 12.5px; color: #9c7280; flex-wrap: wrap; }
+.hand { font-style: normal; font-size: 19px; color: #b04a70; margin-left: 4px; display: inline-block; }
+.blank { font-style: normal; font-size: 12px; color: #c8aab5; border-bottom: 1px dashed #e0b8c6; padding: 0 6px; margin-left: 4px; }
+.write { animation: write 1.2s steps(12) both; clip-path: inset(0 100% 0 0); }
+@keyframes write { to { clip-path: inset(0 0 0 0); } }
+.stampBtn { align-self: center; margin-top: 4px; font: inherit; font-size: 16px; letter-spacing: 4px; padding: 8px 26px; border-radius: 12px; border: 2px solid #fff; background: #e2789c; color: #fff; font-weight: 700; box-shadow: 0 4px 0 #c45d82; cursor: pointer; }
+.stampBtn:active { transform: translateY(3px); box-shadow: 0 1px 0 #c45d82; }
+.stampBtn:disabled { opacity: .7; }
+/* 印章：从上面咚地落下，压一下，留个红印 */
+.seal { position: absolute; right: 24px; bottom: 54px; width: 64px; height: 64px; border-radius: 50%; border: 3px solid rgba(214, 70, 110, .85); color: rgba(214, 70, 110, .9); font-style: normal; font-size: 30px; font-weight: 700; display: flex; align-items: center; justify-content: center; transform: rotate(-14deg); animation: seal .5s cubic-bezier(.5, 0, .5, 1.6) both; mix-blend-mode: multiply; }
+@keyframes seal { 0% { opacity: 0; transform: translateY(-80px) scale(1.8) rotate(-14deg); } 60% { opacity: 1; transform: translateY(0) scale(.9) rotate(-14deg); } 100% { transform: scale(1) rotate(-14deg); } }
+/* 盖完章：纸折小、变成纸飞机飞出去 */
+.fly { animation: fly .95s cubic-bezier(.6, 0, .4, 1) forwards; }
+@keyframes fly { 0% { transform: none; } 35% { transform: scale(.35) rotate(-8deg); border-radius: 40% 4px 40% 4px; } 100% { transform: translate(60vw, -70vh) scale(.12) rotate(28deg); opacity: 0; } }
+
+.terms { font-size: 14px; line-height: 1.7; margin: 0; text-align: center; }
+.terms b { color: #b04a70; } .terms em { font-style: normal; color: #6b4a58; border-bottom: 1.5px dashed #e9a8be; }
+.asking { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 6px 0; font-size: 13px; color: #9c7280; }
+.asking button { font: inherit; font-size: 12px; padding: 3px 12px; border-radius: 999px; border: 1.5px solid #f0c3d3; background: #fff; color: #b0607e; cursor: pointer; }
+.plane { width: 56px; height: 56px; object-fit: contain; animation: planeBob 2s ease-in-out infinite; }
+@keyframes planeBob { 0%, 100% { transform: translate(0, 0) rotate(-6deg); } 50% { transform: translate(8px, -6px) rotate(4deg); } }
+/* 比分：两条跑道，小鱼游到自己的成绩那儿 */
+.race { display: flex; flex-direction: column; gap: 7px; padding: 4px 0; }
+.lane { display: flex; align-items: center; gap: 8px; }
+.lane > img { width: 26px; height: 26px; object-fit: contain; }
+.lane > b { flex: none; min-width: 64px; text-align: right; font-size: 14px; color: #b04a70; }
+.track { position: relative; flex: 1; height: 16px; border-radius: 8px; background: repeating-linear-gradient(90deg, #e9f2ff 0 10px, #dfeafb 10px 20px); box-shadow: inset 0 1px 2px rgba(80, 100, 140, .15); overflow: hidden; }
+.fishRun { position: absolute; top: 2px; width: 22px; height: 12px; background: url(/fanart/fish.png) center/contain no-repeat; transition: left 1.2s cubic-bezier(.3, 1.3, .5, 1); animation: wiggle .6s ease-in-out infinite; }
+@keyframes wiggle { 50% { transform: translateY(-1px) rotate(-6deg); } }
+.left { align-self: center; font-size: 12.5px; color: #9c7280; }
+.said { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13.5px; color: #6b4a58; padding: 4px 8px; border-radius: 10px; background: rgba(255, 255, 255, .7); }
+.said img { width: 20px; height: 20px; object-fit: contain; }
+.result { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 0 2px; }
+.result b { font-size: 16px; color: #c0507a; text-align: center; }
+.result small { font-size: 12px; color: #9c7280; }
+.confetti { position: absolute; inset: -40px 0 0; z-index: -1; pointer-events: none; }
+.confetti i { position: absolute; top: 0; width: 6px; height: 9px; border-radius: 2px; background: #f7a8c4; animation: fall 1.6s ease-in forwards; }
+.confetti i:nth-child(3n) { background: #b9c8f0; } .confetti i:nth-child(4n) { background: #ffe08a; }
+@keyframes fall { to { transform: translateY(140px) rotate(400deg); opacity: 0; } }
+/* 底下一排小欠条（点开看） */
+.ious { border-top: 1.5px dashed #f0c6d4; padding-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.iousHead { font-size: 12.5px; color: #9c7280; }
+.slips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 6px; }
+.slip { flex: none; width: 92px; display: flex; flex-direction: column; gap: 2px; padding: 8px 6px 7px; border: none; border-radius: 3px; background: #fffdf6; box-shadow: 0 2px 5px rgba(120, 80, 60, .2); font: inherit; text-align: left; cursor: pointer; transform: rotate(var(--r)); }
+.slip b { font-size: 11.5px; color: #b04a70; } .slip span { font-size: 11px; color: #7a5664; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.slipTorn { opacity: .5; background: linear-gradient(100deg, #fffdf6 48%, transparent 49% 51%, #fffdf6 52%); }
+
+/* 顶上的丝带（赌着的时候） */
+.ribbon { position: absolute; left: 50%; top: calc(var(--st, 0px) + 10px); z-index: 7; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; max-width: calc(100% - 260px); min-width: 0; padding: 4px 12px 4px 5px; border-radius: 999px; border: 1.5px dashed #f3b5c9; background: rgba(255, 250, 243, .95); box-shadow: 0 3px 10px rgba(80, 40, 60, .15); font: inherit; font-size: 12px; color: #8a5a6c; cursor: pointer; animation: ribIn .45s cubic-bezier(.3, 1.5, .5, 1) both; }
+.ribbon img { width: 22px; height: 22px; object-fit: contain; flex: none; }
+.ribbon span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ribbon b { color: #d4618a; }
+@keyframes ribIn { from { opacity: 0; transform: translate(-50%, -12px); } }
+
+/* 欠条卡：撕的时候左右两半各自转开往下掉 */
+.iou { position: relative; width: min(300px, 100%); display: flex; flex-direction: column; align-items: center; gap: 10px; animation: paperIn .5s cubic-bezier(.3, 1.4, .5, 1) both; font-family: "LXGW WenKai Screen", "Kaiti SC", serif; }
+.iouHalf { width: 100%; }
+.iouHalf + .iouHalf { position: absolute; left: 0; top: 0; }
+.iouL { clip-path: polygon(0 0, 52% 0, 47% 18%, 53% 36%, 46% 55%, 52% 74%, 47% 100%, 0 100%); }
+.iouR { clip-path: polygon(52% 0, 100% 0, 100% 100%, 47% 100%, 52% 74%, 46% 55%, 53% 36%, 47% 18%); }
+.iouInner { position: relative; padding: 22px 20px 16px; border-radius: 3px; background: repeating-linear-gradient(transparent 0 25px, rgba(200, 160, 140, .2) 25px 26px), #fffdf6; box-shadow: 0 6px 16px rgba(90, 60, 50, .28); color: #6b4a3a; display: flex; flex-direction: column; gap: 8px; }
+.tape { position: absolute; left: 50%; top: -9px; width: 64px; height: 18px; margin-left: -32px; background: rgba(247, 168, 196, .75); transform: rotate(-3deg); border-radius: 2px; }
+.iouTitle { align-self: center; font-size: 20px; letter-spacing: 8px; color: #8a4a3a; }
+.iouText { margin: 0; font-size: 15px; line-height: 1.8; } .iouText u { text-decoration: none; border-bottom: 1.5px solid #c99a88; padding: 0 3px; } .iouText em { font-style: normal; font-size: 17px; color: #b04a70; }
+.iouSign { display: flex; justify-content: space-between; font-size: 12.5px; color: #8a6a5a; } .iouSign i { font-style: normal; font-size: 17px; color: #6b3a2a; }
+.paidStamp { position: absolute; right: 16px; top: 38px; padding: 2px 8px; border: 2.5px solid rgba(214, 70, 110, .8); border-radius: 6px; color: rgba(214, 70, 110, .85); font-style: normal; font-size: 18px; font-weight: 700; transform: rotate(-12deg); animation: seal .45s cubic-bezier(.5, 0, .5, 1.6) both; }
+.torn .iouL { animation: tearL 1.2s cubic-bezier(.4, 0, .6, 1) .15s forwards; }
+.torn .iouR { animation: tearR 1.2s cubic-bezier(.4, 0, .6, 1) .15s forwards; }
+@keyframes tearL { 0% { transform: none; } 25% { transform: translateX(-8px) rotate(-6deg); } 100% { transform: translate(-60px, 70vh) rotate(-40deg); opacity: 0; } }
+@keyframes tearR { 0% { transform: none; } 25% { transform: translateX(8px) rotate(6deg); } 100% { transform: translate(60px, 70vh) rotate(36deg); opacity: 0; } }
+.iouBtns { display: flex; gap: 8px; align-items: center; }
+.iouBtns button { font: inherit; font-size: 14px; padding: 6px 16px; border-radius: 999px; border: 1.5px solid #f0c3d3; background: #fff; color: #b0607e; cursor: pointer; }
+.iouBtns .go { background: #e58aa8; border-color: #e58aa8; color: #fff; font-weight: 700; }
+.wait { font-size: 13px; color: #fff; background: rgba(120, 80, 100, .5); padding: 4px 10px; border-radius: 999px; }
+.againBtn { margin-top: 6px; font: inherit; font-size: 13px; padding: 5px 16px; border-radius: 999px; border: 1.5px solid #f0c3d3; background: #fff; color: #b0607e; cursor: pointer; }

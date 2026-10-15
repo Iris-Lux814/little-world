@@ -1,0 +1,34 @@
+:root {
+  /* 底 */
+  --bg:            #FDFBF7;   /* 奶白主背景 */
+  --bg-dots:       #EFEAF2;   /* 点点图案色 */
+  --card:          #FFFFFF;   /* 卡片白 */
+  --card-alt:      #FDF4F7;   /* 浅粉卡片（展开的注入条） */
+
+  /* 粉 */
+  --pink:          #F5B8C8;   /* 主粉 */
+  --pink-deep:     #E895AC;   /* 强调粉（按钮、数字） */
+  --pink-soft:     #FCE8EE;   /* 淡粉（选中态、装饰条底） */
+
+  /* 线 */
+  --line:          #E8DDE2;   /* 气泡描边、分割线 */
+  --line-dash:     #D9C6CE;   /* 虚线 */
+
+  /* 字 */
+  --text:          #4A4045;   /* 正文 */
+  --text-sub:      #9B8A92;   /* 次要 */
+  --text-faint:    #B49AA5;   /* 最淡（虚线条文字） */
+
+  /* 状态 */
+  --online:        #7FD4A0;   /* 在线绿点 */
+  --offline:       #C9C9C9;   /* 离线灰点 */
+
+  /* 尺寸 */
+  --radius-card:   20px;
+  --radius-bubble: 18px;
+  --gap:           12px;
+
+  /* 字体 */
+  --font: -apple-system, "PingFang SC", "Hiragino Sans", "Noto Sans SC", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}

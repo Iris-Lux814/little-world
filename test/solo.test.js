@@ -57,6 +57,7 @@ function png(w, h, o = {}) {
   for (let i = 0; i < 40; i++) { try { await call("GET", "/api/world/ping"); break; } catch { await wait(150); } }
   const w0 = (await call("GET", "/api/world?px=10&py=20&pd=1")).j;
   ok(w0.ok && w0.players.length === 3 && w0.roles.host && w0.roles.companions.length === 2, "世界里有你和两个伙伴");
+  { const d = new Date(w0.now), m = ((d.getUTCHours() * 60 + d.getUTCMinutes() + w0.tzOffsetMin) % 1440 + 1440) % 1440; ok(Number.isInteger(w0.tzOffsetMin) && Math.floor(m / 60) === w0.hour, "tzOffsetMin 跟 hour 对得上"); }
   ok(Object.keys(w0.ai).length === 2 && w0.dex.length > 10 && w0.wallet && w0.mePos.x === 10, "ai / 图鉴 / 钱包 / 站位都在");
   ok(w0.players.every((p) => p.sprite === null), "没传过小人图时 sprite 是 null");
   ok((await call("POST", "/api/world/farm/shake", {})).j.ok !== undefined, "农场接口在");
