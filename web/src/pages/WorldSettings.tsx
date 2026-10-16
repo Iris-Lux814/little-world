@@ -44,35 +44,52 @@ function SkyWhere() {
   const [manual, setManual] = useState(false); const [lat, setLat] = useState(""); const [lon, setLon] = useState(""); const [busy, setBusy] = useState(false);
   const wrote = useRef(false); // 存过 / 清过：初次读取晚回来也不再用它（不然显示会退回旧位置）
   useEffect(() => { let alive = true; skyApi.now().then(n => { if (!alive || wrote.current) return; setWhere(n.where); }).catch(e => alive && setErr((e as Error).message)); return () => { alive = false; }; }, []);
-  const saveTo = async (la: number, lo: number, name?: string) => {
-    if (!Number.isFinite(la) || !Number.isFinite(lo) || Math.abs(la) > 90 || Math.abs(lo) > 180) { setErr("纬度 -90～90、经度 -180～180"); snd.sfx("nope"); return; }
-    if (busy) return; setBusy(true); setErr(""); wrote.current = true;
-    try { const r = await skyApi.where(la, lo, name); setWhere(r.where ?? { lat: la, lon: lo, city: name }); setOpen(false); setManual(false); snd.sfx("clasp"); }
-    catch (e) { setErr(`没存上：${(e as Error).message}`); snd.sfx("nope"); }
-    finally { setBusy(false); }
+  // 一次只做一件事：点城市 / 定位 / 清掉 / 手填存，都先拿锁（ref，回调里也是最新的），做完才放；
+  // 定位从点下去到存完全程锁着；收起面板 / 离开设置页时序号 +1，还没回来的定位就作废
+  const lock = useRef(false), act = useRef(0), alive = useRef(true), inFlight = useRef(false); // inFlight：存 / 清的请求已经发出去了
+  useEffect(() => { alive.current = true; return () => { alive.current = false; act.current++; }; }, []); // StrictMode 开发时会 setup→cleanup→setup，所以 setup 里要置回 true
+  const begin = () => { if (lock.current) return 0; lock.current = true; setBusy(true); setErr(""); return ++act.current; };
+  const end = (id: number) => { if (id !== act.current) return; lock.current = false; if (alive.current) setBusy(false); };
+  const valid = (la: number, lo: number) => Number.isFinite(la) && Number.isFinite(lo) && Math.abs(la) <= 90 && Math.abs(lo) <= 180;
+  const doSave = async (id: number, la: number, lo: number, name?: string) => {
+    wrote.current = true; inFlight.current = true;
+    try { const r = await skyApi.where(la, lo, name); if (!alive.current || id !== act.current) return; setWhere(r.where ?? { lat: la, lon: lo, city: name }); setOpen(false); setManual(false); snd.sfx("clasp"); }
+    catch (e) { if (alive.current && id === act.current) { setErr(`没存上：${(e as Error).message}`); snd.sfx("nope"); } }
+    finally { inFlight.current = false; end(id); }
+  };
+  const saveTo = (la: number, lo: number, name?: string) => {
+    if (!valid(la, lo)) { setErr("纬度 -90～90、经度 -180～180"); snd.sfx("nope"); return; }
+    const id = begin(); if (!id) return; void doSave(id, la, lo, name);
   };
   const locate = () => {
     if (!navigator.geolocation) { setErr("这个浏览器拿不到定位，点个城市或者手填吧"); return; }
-    setErr("定位中…"); navigator.geolocation.getCurrentPosition(p => { setErr(""); void saveTo(Math.round(p.coords.latitude * 10) / 10, Math.round(p.coords.longitude * 10) / 10, "定位的地方"); },
-      () => setErr("没拿到定位（局域网的 http 地址浏览器不给定位），点个城市或者手填吧"), { timeout: 10000 });
+    const id = begin(); if (!id) return; setErr("定位中…");
+    navigator.geolocation.getCurrentPosition(p => {
+      if (!alive.current || id !== act.current) return; setErr("");
+      const la = Math.round(p.coords.latitude * 10) / 10, lo = Math.round(p.coords.longitude * 10) / 10;
+      if (!valid(la, lo)) { setErr("定位回来的数不对，点个城市或者手填吧"); end(id); return; }
+      void doSave(id, la, lo, "定位的地方");
+    }, () => { if (!alive.current || id !== act.current) return; setErr("没拿到定位（局域网的 http 地址浏览器不给定位），点个城市或者手填吧"); end(id); }, { timeout: 10000 });
   };
   const clear = async () => {
-    if (busy) return; setBusy(true); setErr(""); wrote.current = true;
-    try { const r = await skyApi.clearWhere(); setWhere(r.where ?? (where ? { ...where, approx: true, city: "" } : null)); setOpen(false); setManual(false); snd.sfx("fold"); }
-    catch (e) { setErr(`没清掉：${(e as Error).message}`); snd.sfx("nope"); }
-    finally { setBusy(false); }
+    const id = begin(); if (!id) return; wrote.current = true; inFlight.current = true;
+    try { const r = await skyApi.clearWhere(); if (!alive.current || id !== act.current) return; setWhere(r.where ?? (where ? { ...where, approx: true, city: "" } : null)); setOpen(false); setManual(false); snd.sfx("fold"); }
+    catch (e) { if (alive.current && id === act.current) { setErr(`没清掉：${(e as Error).message}`); snd.sfx("nope"); } }
+    finally { inFlight.current = false; end(id); }
   };
+  /** 收起面板：还在等定位（请求没发）就作废、放锁；存 / 清的请求已经在路上就不放锁，等它回来自己放（不然下一次点击会跟它在服务端抢先后） */
+  const fold = () => { if (!inFlight.current) { act.current++; lock.current = false; setBusy(false); } setOpen(false); setManual(false); };
   const label = where ? (where.approx ? "没填，按时区估的" : where.city || `${where.lat.toFixed(1)}°, ${where.lon.toFixed(1)}°`) : err ? "读不到" : "读取中…";
   const on = (c: [string, number, number]) => !!where && !where.approx && where.city === c[0];
   return (
     <>
       <div className={s.row} style={{ animationDelay: ".76s" }}>
         <img className={s.ico} src="/fanart/b2-star.png" alt="" /><div className={s.lbl}><b>看星星的位置</b><small>{label}</small></div>
-        <button type="button" className={s.go} onClick={() => { snd.sfx("tap"); setOpen(o => !o); setErr(""); }}>{open ? "收起" : "改"}</button>
+        <button type="button" className={s.go} onClick={() => { snd.sfx("tap"); setErr(""); if (open) fold(); else setOpen(true); }}>{open ? "收起" : "改"}</button>
       </div>
       {open && (
         <div className={s.wherePanel}>
-          <div className={s.chips}>{CITIES.map((c, i) => <button key={c[0]} type="button" disabled={busy} className={`${s.chip}${on(c) ? ` ${s.chipOn}` : ""}`} style={{ animationDelay: `${i * 0.012}s` }} onClick={() => void saveTo(c[1], c[2], c[0])}>{c[0]}</button>)}</div>
+          <div className={s.chips}>{CITIES.map((c, i) => <button key={c[0]} type="button" disabled={busy} className={`${s.chip}${on(c) ? ` ${s.chipOn}` : ""}`} style={{ animationDelay: `${i * 0.012}s` }} onClick={() => saveTo(c[1], c[2], c[0])}>{c[0]}</button>)}</div>
           <div className={s.whereFoot}>
             <button type="button" className={s.go} disabled={busy} onClick={locate}>定位</button>
             <button type="button" className={s.go} disabled={busy} onClick={() => { snd.sfx("tap"); setManual(m => !m); }}>{manual ? "不手填了" : "手填经纬度"}</button>
@@ -82,7 +99,7 @@ function SkyWhere() {
             <div className={s.whereLL}>
               <input value={lat} onChange={e => setLat(e.target.value)} placeholder="纬度" inputMode="decimal" />
               <input value={lon} onChange={e => setLon(e.target.value)} placeholder="经度" inputMode="decimal" />
-              <button type="button" className={s.go} disabled={busy} onClick={() => { if (!lat.trim() || !lon.trim()) { setErr("两个都要填"); snd.sfx("nope"); return; } void saveTo(Number(lat), Number(lon)); }}>存</button>
+              <button type="button" className={s.go} disabled={busy} onClick={() => { if (!lat.trim() || !lon.trim()) { setErr("两个都要填"); snd.sfx("nope"); return; } saveTo(Number(lat), Number(lon)); }}>存</button>
             </div>
           )}
           <small className={s.whereNote}>望远镜和窗外按这里算星空；只存在你自己的世界服务里</small>
