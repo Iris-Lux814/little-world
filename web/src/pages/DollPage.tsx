@@ -1,6 +1,6 @@
 // 我的小人：给自己（或伙伴）换一张标准小人图。
 // 选图 → 当场检查（PNG / 240×320 / ≤512KB / 透明底 / 每格都有画 / 脚踩第 60 行）→ 镜子里先走一圈（朝下 → 朝右 → 朝上 → 朝左 → 甩竿 → 坐）
-// → 走完一圈「换上」才亮，点了才传给后端。镜子底下的地砖跟着走路方向往反方向滚，看着像真在走。
+// 走完一圈「换上」才亮，点了才传给后端。镜子底下的地砖跟着走路方向往反方向滚，看着像真在走。
 import { useEffect, useRef, useState } from "react";
 import w from "./WorldSettings.module.css";
 import s from "./DollPage.module.css";

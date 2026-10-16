@@ -8,6 +8,7 @@
 - 商店：饵、竿、浮漂、线轴、挂件、桶、道具、摆设；卖鱼按星级和重量算钱。
 - 一起玩：传说鱼要大家一起拉，在场的人喊「加油 / 放线」；打赌（谁钓得最重 / 谁先钓到 / 谁钓得多），输了记欠条。
 - 伞树农场：每人一个花盆，伞里存雨水，摇伞 / 转竹管浇水，挨着的两盆同时开花会串粉出杂交种子。
+- 星空：小屋的望远镜 / 圆窗看出去是此刻真实的星空——星座连线、月相、行星，对准星云还能看照片；位置自己填，本机算，不联网。
 - 鱼桶牌：用自己钓过的鱼当牌，天气牌改规则，出最小的那张能偷看下一轮天气。
 - 斗地主：完整牌型、叫分、提示、托管，人和 AI 伙伴混坐。
 - 联机：发邀请链接给朋友（密码 + 设备 + 主人点同意），朋友来你的世界一起钓；存档能导出 / 导入（带签名）。
@@ -41,6 +42,8 @@ node dev.js --lan            # 手机也要玩：对同一个 WiFi 开放（公�
 
 打开终端里 vite 给的地址（`--lan` 起的，手机和电脑在同一个 WiFi 下用它给的局域网地址也能开），进门页「世界服务地址」留空直接点「进去」。存档在 `./data`。
 
+小屋阁楼的望远镜和圆窗点进去，是你头顶此刻真实的星空（星座、月相、行星，在本机算，不联网）。看星星的位置在「设置 → 星空 → 看星星的位置」里填城市或经纬度；不填就按时区估一个。
+
 ## 单人版跑起来（只起后端）
 
 ```bash
@@ -49,9 +52,9 @@ DATA_DIR=./data PORT=29901 node server/solo.js
 # 前端把世界接口地址指到 http://127.0.0.1:29901/api/world
 ```
 
-环境变量：`PORT`（默认 29901）、`HOST`（默认 127.0.0.1，只听本机）、`DATA_DIR`（存档）、`WORLD_PREFIX`（接口前缀，默认 `/api/world`）、`WORLD_CONTENT` / `WORLD_FARM_CONTENT` / `WORLD_DUEL_CONTENT`（内容包）。
+环境变量：`PORT`（默认 29901）、`HOST`（默认 127.0.0.1，只听本机）、`DATA_DIR`（存档）、`WORLD_PREFIX`（接口前缀，默认 `/api/world`）、`WORLD_CONTENT` / `WORLD_FARM_CONTENT` / `WORLD_DUEL_CONTENT`（内容包）、`WORLD_LAT` / `WORLD_LON` / `WORLD_CITY`（看星星的位置，不设按时区估）。
 
-接口跟联机版 / 原版一致：`GET /api/world`（带 `px/py/pd` 报站位）、`/cast` `/hook` `/land`、`/travel` `/visit` `/sell` `/buy` `/equip` `/use` `/act`、`/farm/*`、`/cabin/*`、`/legend/*`、`/bet/*`、`/ddz/*`、`/cards/*`、`/chat`。
+接口跟联机版 / 原版一致：`GET /api/world`（带 `px/py/pd` 报站位）、`/cast` `/hook` `/land`、`/travel` `/visit` `/sell` `/buy` `/equip` `/use` `/act`、`/farm/*`、`/cabin/*`、`/legend/*`、`/bet/*`、`/ddz/*`、`/cards/*`、`/chat`；星空 `/sky/catalog` `/sky/now` `/sky/img/<id>.jpg` `/sky/where`（本机算、不联网）。
 
 小人图（前端那边 48×64 一格、5 行 × 5 格）：
 
@@ -91,4 +94,4 @@ DATA_DIR=./data PORT=29900 node server/server.js
 
 ## 许可
 
-代码是 AGPL-3.0。`web/public/fanart` 和前端里第三方角色的形象是同人素材，不在许可范围内，见 [web/README.md](web/README.md)「素材说明」。
+代码是 AGPL-3.0。星空的星表 / 星座线来自 d3-celestial（BSD-3），天文计算用 astronomy-engine（MIT），深空照片来自 Wikimedia Commons（公共领域 / CC0 / CC BY / CC BY-SA，逐张署名在 `content/sky/SOURCES.md`）。`web/public/fanart` 和前端里第三方角色的形象是同人素材，不在许可范围内，见 [web/README.md](web/README.md)「素材说明」。

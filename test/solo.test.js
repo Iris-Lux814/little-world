@@ -88,6 +88,19 @@ function png(w, h, o = {}) {
   const got = await call("GET", `/api/world/sprite/${w1.roles.host}`); ok(got.code === 200 && got.buf && got.buf.length > 50, "能取回来");
   ok((await call("GET", "/api/world")).j.players.find((p) => p.id === w1.roles.host).sprite === up.sprite, "state 里带 sprite");
   ok((await call("DELETE", "/api/world/sprite")).j.ok && (await call("GET", `/api/world/sprite/${w1.roles.host}`)).code === 404, "删掉回默认");
+  // 星空（望远镜 / 圆窗）：星表、照片、此刻的天、位置
+  const cat = (await call("GET", "/api/world/sky/catalog")).j; ok(cat && cat.ok && cat.stars.length > 1000 && cat.lines.length > 50 && cat.deep.every((d) => d.img.startsWith("/api/world/sky/img/") && d.credit && d.license), "星表带照片地址和署名");
+  const im = await fetch(B + cat.deep[0].img); ok(im.status === 200 && im.headers.get("content-type") === "image/jpeg" && (await im.arrayBuffer()).byteLength > 10000, "深空照片拿得到");
+  ok((await call("GET", "/api/world/sky/img/..%2Fcatalog.jpg")).code === 404 && (await call("GET", "/api/world/sky/img/M999.jpg")).code === 404, "照片只认星表里的 id");
+  const sn = (await call("GET", "/api/world/sky/now")).j; ok(sn.ok && sn.where.approx && sn.where.lat === 35 && Math.abs(sn.where.lon - w0.tzOffsetMin / 4) < 0.11 && typeof sn.moon.illum === "number" && sn.planets.length === 5 && sn.sun.light, "没设位置就按时区估");
+  ok((await call("POST", "/api/world/sky/where", { lat: 91, lon: 0 })).code === 400 && (await call("POST", "/api/world/sky/where", { lat: "x" })).code === 400, "位置不对就拒");
+  { let bad = 0; for (const b of [{ lat: null, lon: null }, { lat: "", lon: "" }, { lat: true, lon: false }, [1, 2]]) if ((await call("POST", "/api/world/sky/where", b)).code !== 400) bad++;
+    const nb = await fetch(B + "/api/world/sky/where", { method: "POST", headers: { "Content-Type": "application/json" }, body: "null" });
+    ok(bad === 0 && nb.status === 400 && (await call("GET", "/api/world/sky/where")).j.where.approx, "空值 / 布尔 / 数组 / null 正文都拒，不落成 (0,0)"); }
+  ok((await call("POST", "/api/world/sky/where", { lat: "51.5", lon: "-0.1" })).j.where.lat === 51.5, "数字样子的字符串收");
+  const sw = (await call("POST", "/api/world/sky/where", { lat: 48.8566, lon: 2.3522, city: "巴黎" })).j; ok(sw.ok && sw.where.lat === 48.9 && sw.where.lon === 2.4 && sw.where.city === "巴黎" && !sw.where.approx, "存位置（保留一位小数）");
+  const sn2 = (await call("GET", "/api/world/sky/now?at=" + Date.UTC(2026, 0, 1, 0, 0))).j; ok(sn2.ok && sn2.at === Date.UTC(2026, 0, 1, 0, 0) && sn2.where.city === "巴黎" && sn2.sun.alt < -10, "按存的位置和指定时间算（巴黎元旦零点 UTC 太阳在地平线下）");
+  ok((await call("POST", "/api/world/sky/where", { clear: true })).j.where.approx && (await call("GET", "/api/world/sky/now?at=abc")).code === 400, "删位置回默认、at 不对就拒");
 
   const [a1, a2] = w1.roles.companions;
   for (let i = 0; i < 3; i++) await call("POST", "/api/world/cast", { power: 0.3, dir: 0 }).then(async (c2) => { await wait(c2.j.biteIn + 300); const h2 = (await call("POST", "/api/world/hook", { castId: c2.j.castId })).j; if (h2.fight) { await wait(h2.fight.reelMs * 0.5); await call("POST", "/api/world/land", { castId: c2.j.castId, result: "landed" }); } });

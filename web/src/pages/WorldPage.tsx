@@ -20,6 +20,7 @@ import { TH_FURN, TH_DOOR_X, TH_FLOOR } from "../pixel/treehouse";
 import { WorldBook, preloadBook } from "./WorldBook";
 import { WorldSettings } from "./WorldSettings";
 import { DollPage } from "./DollPage";
+import { TelescopeSheet, WindowSheet } from "./SkySheets";
 import { snd } from "../pixel/sound";
 import { WorldBet, BetRibbon, IouCard, useBet, betApi } from "./WorldBet";
 import { FarmAnimalCard, animalBubHtml } from "./FarmAnimalCard";
@@ -332,7 +333,7 @@ export default function WorldPage() {
     const acted = w.cabinAct("player", c); if (acted && !w.me.cact) return; // 再点一次 = 停下来
     // 望远镜 = 真实星空、圆窗 = 此刻真实的天：先做凑上去 / 扶窗台的动作，0.9 秒后画面推进去
     // 0.9 秒内又点了一下停下、或者推摇杆走开了，就别再推进去（定时器存着，开之前看玩家是不是还在用这件家具）
-    // 开源版没有天象页：望远镜 / 窗外只冒一句台词（下面 lines 里）
+    if (c === "telescope" || c === "window") { clearTimeout(skyT.current); skyT.current = window.setTimeout(() => { const ww = W.current; if (!ww || ww.scene !== "cabin" || (acted && ww.me.cact?.spot !== c)) return; setSheet(c === "telescope" ? "scope" : "window"); }, acted ? 900 : 250); return; }
     if (c === "bed" && acted) { flash(pickLine(["美乐蒂被挤到一边去了。", "被子是晒过的味道。", "坐在床边晃晃腿。"])); return; }
     if (c === "hammock" && acted) { flash(pickLine(["吊床晃呀晃。", "躺一会儿……就一会儿。"])); return; }
     if (!acted && (c === "bed" || c === "hammock")) { if (w.sittingOf("player")) { w.sit("player", false); return; } w.sit("player"); flash(pickLine(c === "bed" ? ["美乐蒂被挤到一边去了。", "被子是晒过的味道。", "躺一会儿……就一会儿。"] : ["吊床晃啊晃。", "从这儿能看见圆窗外面。", "晃着晃着有点困了。"])); return; }
@@ -936,6 +937,8 @@ export default function WorldPage() {
       {sheet === "basket" && farm?.farm && <WorldBasket farm={farm.farm} bag={farm.bag} names={{ player: nm("player"), buddy: nm("buddy"), pal: nm("pal") }} onClose={() => setSheet("")}
         onSell={() => { if (ep) void farmCall(() => worldApi.farmSell(ep)).then(r => { if (r && "wallet" in r && r.wallet) setSt(o => (o ? { ...o, wallet: (r as { wallet: NonNullable<WState["wallet"]> }).wallet } : o)); }); }} />}
       {sheet === "ddz" && <WorldDdz names={{ buddy: nm("buddy"), pal: nm("pal") }} onClose={() => setSheet("")} chat={log.filter(l => l.kind === "say").slice(-20).map(l => ({ id: l.id, at: l.at, who: l.who, text: l.text }))} onSay={() => setCompose(true)} />}
+      {sheet === "scope" && <TelescopeSheet onClose={() => setSheet("")} wx={st?.weathers?.pond ?? st?.weather} />}
+      {sheet === "window" && <WindowSheet onClose={() => setSheet("")} wx={st?.weathers?.pond ?? st?.weather} />}
       {sheet === "cardbox" && <CardBox onPick={k => setSheet(k)} onClose={() => setSheet("")} />}
       {sheet === "fish" && <WorldFishCards names={{ buddy: nm("buddy"), pal: nm("pal") }} onClose={() => setSheet("")} onSwitch={() => setSheet("ddz")} chat={log.filter(l => l.kind === "say").slice(-20).map(l => ({ id: l.id, at: l.at, who: l.who, text: l.text }))} onSay={() => setCompose(true)} />}
       {sheet !== "bet" && !book && <BetRibbon data={bet} nm={nm} onOpen={() => setSheet("bet")} />}

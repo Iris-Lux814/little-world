@@ -15,6 +15,7 @@ const farm = require(path.join(ENGINE, "farm.js"));
 const cards = require(path.join(ENGINE, "cards.js"));
 const ddzHome = require(path.join(ENGINE, "ddz-home.js"));
 const duel = require(path.join(ENGINE, "duel.js"));
+const sky = require(path.join(__dirname, "sky.js"));   // 星空（望远镜 / 圆窗）
 
 const PORT = Number(process.env.PORT || 29901);
 const HOSTNAME = process.env.HOST || "127.0.0.1";
@@ -214,6 +215,13 @@ async function route(req, res) {
   if (p === "/api/ping" || p === `${PREFIX}/ping`) return send(res, 200, { ok: true, t: Date.now(), prefix: PREFIX });
   if (!p.startsWith(PREFIX + "/") && p !== PREFIX) return send(res, 404, { ok: false, error: "not found" });
   const sub = p === PREFIX ? "" : p.slice(PREFIX.length);
+
+  // 星空（sky.js，小屋望远镜 / 圆窗）：先于读 JSON 正文（POST /sky/where 自己读）。天气只读小池塘现在那段，不在这里换天气
+  if (sub === "/sky" || sub.startsWith("/sky/")) {
+    let wk = null; try { const cur = (load().wx || {}).pond; if (cur && Date.now() < cur.until) wk = cur.kind; } catch { /* 拿不到就不给天气 */ }
+    await sky.route(req, res, sub, { M, q, prefix: PREFIX, dataDir: DATA, tzOffsetMin: tzOffsetMin(), weatherKind: wk, send, readRaw });
+    return;
+  }
 
   // 小人图：先于读 JSON 正文
   if (sub === "/sprite" && M === "POST") {
